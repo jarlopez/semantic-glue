@@ -19,7 +19,7 @@ public class Test_MyOntManager {
     private static OWLOntologyManager manager = null;
     private static OWLOntology ontology = null;
     private static Reasoner reasoner = null;
-    private static String ontLocation = ""; // TODO Point to absolute path to travel.owl
+    private static String ontLocation = "file:///home/johan/school/2017-p3/web-services/project/src/main/resources/travel.owl";
     private static MyOntManager ontsum = null;
 
 

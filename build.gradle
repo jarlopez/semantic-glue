@@ -12,15 +12,23 @@ repositories {
 
 
 dependencies {
+    // Local libraries
     compile fileTree(dir: 'lib/xsdlib', include: ['*.jar'])
     compile fileTree(dir: 'lib/jena', include: ['*.jar'])
     compile fileTree(dir: 'lib/owlapi', include: ['*.jar'])
     compile fileTree(dir: 'lib/owlapiv3', include: ['*.jar'])
     compile fileTree(dir: 'lib/pellet2.0', include: ['*.jar'])
 
+    // WSDL parsing
     compile group: 'com.predic8', name: 'soa-model-core', version: '1.6.0'
     compile group: 'com.predic8', name: 'soa-model-parent', version: '1.6.0'
 
+    // Logging
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.1'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.1'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.24'
 
+
+    // Testing
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

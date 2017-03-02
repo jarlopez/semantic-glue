@@ -1,15 +1,40 @@
 package edu.kth.wsglue;
 
-import com.predic8.schema.*;
+import com.predic8.schema.Schema;
 import com.predic8.wsdl.*;
+import edu.kth.wsglue.generated.WSMatchingType;
+import edu.kth.wsglue.parsing.DocumentMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SyntacticMatchingApp {
+    private static final Logger log = LoggerFactory.getLogger(SyntacticMatchingApp.class.getName());
+
+    private static final String TEMP_WSDL_0 = "/home/johan/school/2017-p3/web-services/project/WSDLs/FlightwiseAPIProfile.wsdl";
+    private static final String TEMP_WSDL_1 = "/home/johan/school/2017-p3/web-services/project/WSDLs/FlightAwareAPIProfile.wsdl";
 
     public static void main(String[] args) {
-        String input = "/home/johan/school/2017-p3/web-services/project/WSDLs/TripAuthorityAPIProfile.wsdl";
-        if  (args.length > 0) {
-            input = args[0];
+        String first = TEMP_WSDL_0;
+        String second = TEMP_WSDL_1;
+        if  (args.length == 2) {
+            first = args[0];
+            second = args[1];
         }
+        SyntacticMatchingApp app = new SyntacticMatchingApp();
+        DocumentMatcher matcher = new DocumentMatcher();
+        try {
+            WSMatchingType outputWsdl = matcher.generateMatchProfile(first, second);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        // TODO Marshal to output file (could be provided in args[2])
+    }
+
+    private static void out(String str) {
+        System.out.println(str);
+    }
+
+    private void printWsdl(String input) {
         WSDLParser parser = new WSDLParser();
         Definitions defs = parser.parse(input);
 
@@ -98,9 +123,4 @@ public class SyntacticMatchingApp {
         }
         out("");
     }
-
-    private static void out(String str) {
-        System.out.println(str);
-    }
-
 }
