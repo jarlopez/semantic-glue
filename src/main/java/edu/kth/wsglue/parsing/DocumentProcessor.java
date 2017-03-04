@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.*;
@@ -25,8 +26,24 @@ public abstract class DocumentProcessor {
     private String workingDirectory;
 
     private static final String FILETYPE_EXT = ".wsdl";
-    private static final long PARSE_TIMEOUT_MS = 10000;
-    private static final long DEBUG_MAX_FILES = 1;
+    private static final long PARSE_TIMEOUT_MS = 20000;
+    private static final long DEBUG_MAX_FILES = 10000;
+
+    private static Set<String> skipList = new HashSet<>();
+    private static final String SKIP_FILE_DELIM = "\r\n";
+    private static final String SKIP_FILES = "" +
+            "CheckCompanyStatusResponse" + SKIP_FILE_DELIM +                // Parse error
+            "InnovativeMerchantSolutionsAPIProfile" + SKIP_FILE_DELIM +     // Parse error
+            "PaymentVisionPayAPIProfile" + SKIP_FILE_DELIM +                // Parse error
+            "Looking4ParkingAPIProfile" + SKIP_FILE_DELIM +                 // Parse error
+            "DeveloperGardenClickandBuyAPIProfile" + SKIP_FILE_DELIM +      // Parse error
+            "compositeFlightStatsAPIProfile" + SKIP_FILE_DELIM +            // Too long timeout
+            "GoToBillingAPIProfile" + SKIP_FILE_DELIM +                     // Too long timeout
+            "BangoDirectBillingAPIProfile" + SKIP_FILE_DELIM                // Parse error
+            ;
+    static {
+        skipList.addAll(Arrays.asList(SKIP_FILES.split(SKIP_FILE_DELIM)));
+    }
 
     public DocumentProcessor(String wd) {
         workingDirectory = wd;
@@ -70,6 +87,10 @@ public abstract class DocumentProcessor {
         assert files != null : "No " + FILETYPE_EXT + " files exist in " + workingDirectory;
         int debugIndex = 0;
         for (File wsdlFile : files) {
+            if (skipList.contains(wsdlFile.getName().split(FILETYPE_EXT)[0])) {
+                log.debug("Skipping " + wsdlFile.getName() + " due to skiplist entry");
+                continue;
+            }
             debugIndex += 1;
             if (debugIndex > DEBUG_MAX_FILES) {
                 log.debug("Breaking out of loop due to DEBUG_MAX_FILES");

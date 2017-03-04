@@ -15,7 +15,7 @@ import org.w3c.dom.NodeList;
 import java.util.*;
 
 public class WSDLProcessor extends DocumentProcessor {
-    private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(WSDLProcessor.class.getName());
 
     private List<WSDLSummary> summaries = new ArrayList<>();
 
@@ -30,41 +30,50 @@ public class WSDLProcessor extends DocumentProcessor {
         for (Document document : documents) {
             // Build up search cache in helper
             helper.updateDocument(document);
-
-            WSDLSummary summary = new WSDLSummary(document);
-            // Process operations
-            NodeList operations = document.getElementsByTagName(WSDLUtil.Selectors.Operation);
-            for (int i = 0; i < operations.getLength(); i++) {
-                Element node = (Element) operations.item(i);
-                if (!Objects.equals(node.getParentNode().getNodeName(), WSDLUtil.Selectors.PortType)) {
-                    log.debug("Operation node not inside PortType. Skipping");
-                    continue;
-                }
-                Element inputEl = (Element) node.getElementsByTagName(WSDLUtil.Selectors.Input).item(0);
-                Element outputEl = (Element) node.getElementsByTagName(WSDLUtil.Selectors.Output).item(0);
-                Operation operation = new Operation(node.getAttribute("name"));
-                Message input = new Message(inputEl.getAttribute("message"));
-                Message output = new Message(outputEl.getAttribute("message"));
-
-                // Extracts message parts
-                Element inputMsg = helper.findElementByName(input.getName());
-                Element outputMsg = helper.findElementByName(output.getName());
-                Set<String> inputFields = extractOperationFields(inputMsg);
-                Set<String> outputFields = extractOperationFields(outputMsg);
-
-                input.setFieldNames(inputFields);
-                output.setFieldNames(outputFields);
-
-                operation.setInput(input);
-                operation.setOutput(output);
-
-                summary.getOperations().add(operation);
-                log.debug("Fields generated for " + node.getAttribute("name") + ": " + inputFields + outputFields);
-            }
-            summaries.add(summary);
+            // Construct in-memory representation
+            summaries.add(processService(document));
         }
         log.info("Done processing documents into in-memory summaries");
         log.debug(String.valueOf(summaries));
+    }
+
+    private WSDLSummary processService(Document document) {
+        WSDLSummary summary = new WSDLSummary(document);
+        Element serviceEl = (Element) document.getElementsByTagNameNS("*", "service").item(0);
+        summary.setServiceName(serviceEl.getAttribute("name"));
+        summary.getOperations().addAll(processOperations(document));
+        return summary;
+    }
+
+    private Set<Operation> processOperations(Document document) {
+        Set<Operation> rv = new HashSet<>();
+        if (document == null) {
+            return rv;
+        }
+        NodeList operations = document.getElementsByTagNameNS("*", WSDLUtil.Selectors.Operation);
+        for (int i = 0; i < operations.getLength(); i++) {
+            Element node = (Element) operations.item(i);
+            if (!Objects.equals(node.getParentNode().getNodeName(), WSDLUtil.Selectors.PortType)) {
+                log.debug("Operation node not inside PortType. Skipping");
+                continue;
+            }
+            Operation operation = new Operation(node.getAttribute("name"));
+
+            operation.setInput(processIO(node, WSDLUtil.Selectors.Input));
+            operation.setOutput(processIO(node, WSDLUtil.Selectors.Output));
+
+            rv.add(operation);
+        }
+        return rv;
+    }
+
+    private Message processIO(Element operationNode, String mode) {
+        Element el = (Element) operationNode.getElementsByTagNameNS("*", String.valueOf(mode)).item(0);
+        Message msg = new Message(el.getAttribute("message"));
+        Element msgEl = helper.findElementByName(msg.getName());
+        Set<String> fields = extractOperationFields(msgEl);
+        msg.setFieldNames(fields);
+        return msg;
     }
 
     private Set<String> extractOperationFields(Element partContainer) {
