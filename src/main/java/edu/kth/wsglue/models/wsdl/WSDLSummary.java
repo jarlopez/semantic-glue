@@ -5,7 +5,7 @@ import org.w3c.dom.Document;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WSDLSummary {
+public class WSDLSummary implements WSDLRepresentation {
     private Document documentRef;
     private Set<Operation> operations = new HashSet<>();
     private String serviceName;

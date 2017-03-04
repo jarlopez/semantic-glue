@@ -10,15 +10,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 public abstract class DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class.getName());
 
-    protected Set<Document> documents = new HashSet<>();
+    protected List<Document> documents = new ArrayList<>();
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private static DocumentBuilder documentBuilder;

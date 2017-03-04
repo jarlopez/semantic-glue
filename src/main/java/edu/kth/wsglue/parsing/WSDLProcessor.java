@@ -1,8 +1,10 @@
 package edu.kth.wsglue.parsing;
 
+import edu.kth.wsglue.models.generated.WSMatchingType;
 import edu.kth.wsglue.models.wsdl.Message;
 import edu.kth.wsglue.models.wsdl.Operation;
 import edu.kth.wsglue.models.wsdl.WSDLSummary;
+import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
 import edu.kth.wsglue.parsing.util.TagName;
 import edu.kth.wsglue.parsing.util.WSDLHelper;
 import edu.kth.wsglue.parsing.util.WSDLUtil;
@@ -24,6 +26,8 @@ public class WSDLProcessor extends DocumentProcessor {
     public WSDLProcessor(String wd) {
         super(wd);
     }
+
+    private Set<WSMatchingType> comparisons = new HashSet<>();
 
     @Override
     protected void transform() {
@@ -112,11 +116,21 @@ public class WSDLProcessor extends DocumentProcessor {
 
     @Override
     protected void compare() {
-        System.out.println("compare");
+        for (int doc1 = 0; doc1 < summaries.size() - 1; doc1++) {
+            for (int doc2 = doc1 + 1; doc2 < summaries.size(); doc2++) {
+                SyntacticComparator sc = new SyntacticComparator();
+                comparisons.add(sc.compare(summaries.get(doc1), summaries.get(doc2)));
+                comparisons.add(sc.compare(summaries.get(doc2), summaries.get(doc1)));
+            }
+        }
     }
 
     @Override
     protected void unload() {
         System.out.println("unload");
+        for (WSMatchingType res : comparisons) {
+            log.info("Match for " + res.getMacthing().get(0).getInputServiceName() +
+                    " to " + res.getMacthing().get(0).getOutputServiceName());
+        }
     }
 }
