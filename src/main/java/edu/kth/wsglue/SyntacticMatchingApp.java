@@ -4,8 +4,8 @@ import com.predic8.schema.*;
 import com.predic8.schema.Documentation;
 import com.predic8.schema.Import;
 import com.predic8.wsdl.*;
-import edu.kth.wsglue.models.generated.WSMatchingType;
-import edu.kth.wsglue.parsing.DocumentMatcher;
+import edu.kth.wsglue.parsing.DocumentProcessor;
+import edu.kth.wsglue.parsing.WSDLProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,20 +18,22 @@ public class SyntacticMatchingApp {
     private static final String TEMP_SWSDL_1 = "/home/johan/school/current/web-services/project/SAWSDL/_skilledoccupation_BMWservice.wsdl";
 
     public static void main(String[] args) {
-        String first = TEMP_SWSDL_1;
-        String second = TEMP_WSDL_1;
-        if  (args.length == 2) {
-            first = args[0];
-            second = args[1];
-        }
-        SyntacticMatchingApp app = new SyntacticMatchingApp();
-        DocumentMatcher matcher = new DocumentMatcher();
-//        app.printXmlSchema(first);
-        try {
-            WSMatchingType outputWsdl = matcher.generateMatchProfile(first, second);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        DocumentProcessor processor = new WSDLProcessor("/home/johan/school/current/web-services/project/WSDLs");
+        processor.run();
+//        String first = TEMP_SWSDL_1;
+//        String second = TEMP_WSDL_1;
+//        if  (args.length == 2) {
+//            first = args[0];
+//            second = args[1];
+//        }
+//        SyntacticMatchingApp app = new SyntacticMatchingApp();
+//        DocumentMatcher matcher = new DocumentMatcher();
+////        app.printXmlSchema(first);
+//        try {
+//            WSMatchingType outputWsdl = matcher.generateMatchProfile(first, second);
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
         // TODO Marshal to output file (could be provided in args[2])
     }
 
