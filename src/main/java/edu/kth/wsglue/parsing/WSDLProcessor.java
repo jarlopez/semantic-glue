@@ -12,6 +12,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.util.Set;
+
 public class WSDLProcessor extends DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class.getName());
 
@@ -55,12 +57,18 @@ public class WSDLProcessor extends DocumentProcessor {
                             TagName typeTag = new TagName(typeCheck);
                             if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                                 log.info("Found primitive type: " + partName);
+                                input.getFieldNames().add(partName);
                             }
                         }
                     } else {
                         // Find element and process as needed
                         TagName elementTag = new TagName(elementCheck);
-                        log.debug("Processing element " + elementTag.getName() + " in part " + partName);
+                        Element el = helper.findElementByName(elementTag.getName());
+                        if (el != null) {
+                            // Flatten into basic types
+                            Set<String> fields = helper.flatten(el);
+                            log.debug(elementTag.getName() + ": " + fields.toString());
+                        }
                     }
                 }
 

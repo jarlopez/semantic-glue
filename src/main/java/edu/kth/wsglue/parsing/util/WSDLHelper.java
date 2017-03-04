@@ -6,8 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Helper class for managing nodes in a document and caching results.
@@ -61,8 +60,10 @@ public class WSDLHelper {
         Map<String, Element> rv = new HashMap<>();
         for (int i = 0; i < elements.getLength(); i++) {
             Element el = (Element) elements.item(i);
+            String tag = new TagName(el.getTagName()).getName();
             String name = el.getAttribute("name");
             if (name != null) {
+                rv.put(tag + ":" + name, el);
                 rv.put(name, el);
             }
         }
@@ -70,12 +71,76 @@ public class WSDLHelper {
     }
 
 
+    /**
+     * Retrieves the element from the cache.
+     * If the cache is stale for this document, it rebuilds it before retrieving.
+     * @param name the name to look up
+     * @return the element (or null if it doesn't exist)
+     */
     public Element findElementByName(String name) {
         if (staleCache) {
             log.warn("Forcing a rebuild of the elements cache");
             buildElementsCache();
         }
         return elementsCache.get(name);
-
     }
+
+    /**
+     * Retrieves the element from the cache, prioritizing on tag type.
+     * If the cache is stale for this document, it rebuilds it before retrieving.
+     * @param expectedTag the tag type one expects for this element
+     * @param name the name to look up
+     * @return the element (or null if it doesn't exist)
+     */
+    public Element findElementByTagAndName(String expectedTag, String name) {
+        if (staleCache) {
+            log.warn("Forcing a rebuild of the elements cache");
+            buildElementsCache();
+        }
+        // TODO Refactor key-gen into function
+        return elementsCache.get(expectedTag + ":" + name);
+    }
+
+    /**
+     * Recursively looks up and flattens an element into its most basic fields and primitive types.
+     * @param el the element to flatten
+     * @return a set of the names of the underlying fields
+     */
+    public Set<String> flatten(Element el) {
+        Set<String> rv = new HashSet<>();
+        if (el == null) {
+            return rv;
+        }
+        log.debug("Flattening " + el.getAttribute("name"));
+        String typeCheck = el.getAttribute("type");
+        if (typeCheck != null && !Objects.equals(typeCheck, "")) {
+            TagName typeTag = new TagName(typeCheck);
+            if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
+                rv.add(el.getAttribute("name"));
+            } else {
+                log.debug("Looking up type: " + typeTag.getName());
+                Element check = findElementByTagAndName("complexType", typeTag.getName());
+                if (check == null) {
+                    check = findElementByTagAndName("simpleType", typeTag.getName());
+                }
+                if (check == null) {
+                    check = findElementByTagAndName("element", typeTag.getName());
+                }
+                if (check == null) {
+                    // Now we're in trouble!
+                    check = findElementByName(typeTag.getName());
+                }
+                rv.addAll(flatten(check));
+            }
+        } else {
+            // Handle complex case
+            NodeList children = el.getElementsByTagNameNS("*", "element");
+            for (int i = 0; i < children.getLength(); i++) {
+                rv.addAll(flatten((Element) children.item(i)));
+            }
+        }
+        return rv;
+    }
+
+
 }
