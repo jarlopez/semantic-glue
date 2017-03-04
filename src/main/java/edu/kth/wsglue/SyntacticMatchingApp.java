@@ -45,7 +45,7 @@ public class SyntacticMatchingApp {
         WSDLParser parser = new WSDLParser();
         Definitions defs = parser.parse(input);
 
-        out("-------------- WSDL Details --------------");
+        out("-------------- WSDLUtil Details --------------");
         out("TargenNamespace: \t" + defs.getTargetNamespace());
         if (defs.getDocumentation() != null) {
             out("Documentation: \t\t" + defs.getDocumentation());

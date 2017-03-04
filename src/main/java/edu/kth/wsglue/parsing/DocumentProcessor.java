@@ -17,14 +17,16 @@ import java.util.concurrent.*;
 public abstract class DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class.getName());
 
+    protected Set<Document> documents = new HashSet<>();
+
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private static DocumentBuilder documentBuilder;
-    private Set<Document> documents = new HashSet<>();
 
     private String workingDirectory;
-    private static final String FILETYPE_EXT = ".wsdl";
 
+    private static final String FILETYPE_EXT = ".wsdl";
     private static final long PARSE_TIMEOUT_MS = 10000;
+    private static final long DEBUG_MAX_FILES = 1;
 
     public DocumentProcessor(String wd) {
         workingDirectory = wd;
@@ -45,6 +47,16 @@ public abstract class DocumentProcessor {
         transform();
         compare();
         unload();
+        cleanup();
+    }
+
+    public void cleanup() {
+        executor.shutdownNow();
+        try {
+            executor.awaitTermination(PARSE_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            log.warn("Executor interrupted when awaiting termination");
+        }
     }
 
     /**
@@ -56,7 +68,13 @@ public abstract class DocumentProcessor {
         File [] files = dir.listFiles((dir1, name) -> name.endsWith(FILETYPE_EXT));
 
         assert files != null : "No " + FILETYPE_EXT + " files exist in " + workingDirectory;
+        int debugIndex = 0;
         for (File wsdlFile : files) {
+            debugIndex += 1;
+            if (debugIndex > DEBUG_MAX_FILES) {
+                log.debug("Breaking out of loop due to DEBUG_MAX_FILES");
+                break;
+            }
             try {
                 log.debug("Parsing " + wsdlFile.getName());
                 Document document = buildDocument(wsdlFile);

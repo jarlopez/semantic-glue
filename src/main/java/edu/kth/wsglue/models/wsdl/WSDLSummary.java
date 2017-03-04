@@ -1,11 +1,39 @@
 package edu.kth.wsglue.models.wsdl;
 
-import com.predic8.schema.Element;
+import org.w3c.dom.Document;
 
 import java.util.Set;
 
 public class WSDLSummary {
-    private Set<Element> outputs;
+    private Document documentRef;
+    private Set<Operation> operations;
+    private String serviceName;
 
-    private Set<Element> inputs;
+    public WSDLSummary(Document ref) {
+        documentRef = ref;
+    }
+
+    public Document getDocumentRef() {
+        return documentRef;
+    }
+
+    public void setDocumentRef(Document documentRef) {
+        this.documentRef = documentRef;
+    }
+
+    public Set<Operation> getOperations() {
+        return operations;
+    }
+
+    public void setOperations(Set<Operation> operations) {
+        this.operations = operations;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
 }
