@@ -17,6 +17,7 @@ public class WSDLUtil {
 
     public class Selectors {
         public static final String WSDL_NS = "wsdl:";
+        public static final String PortType = WSDL_NS + "portType";
         public static final String Operation = WSDL_NS + "operation";
         public static final String Output = WSDL_NS + "output";
         public static final String Input = WSDL_NS + "input";

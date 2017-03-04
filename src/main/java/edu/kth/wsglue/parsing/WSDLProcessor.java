@@ -12,10 +12,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import java.util.Set;
+import java.util.*;
 
 public class WSDLProcessor extends DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class.getName());
+
+    private List<WSDLSummary> summaries = new ArrayList<>();
 
     private WSDLHelper helper = new WSDLHelper();
 
@@ -34,6 +36,10 @@ public class WSDLProcessor extends DocumentProcessor {
             NodeList operations = document.getElementsByTagName(WSDLUtil.Selectors.Operation);
             for (int i = 0; i < operations.getLength(); i++) {
                 Element node = (Element) operations.item(i);
+                if (!Objects.equals(node.getParentNode().getNodeName(), WSDLUtil.Selectors.PortType)) {
+                    log.debug("Operation node not inside PortType. Skipping");
+                    continue;
+                }
                 Element inputEl = (Element) node.getElementsByTagName(WSDLUtil.Selectors.Input).item(0);
                 Element outputEl = (Element) node.getElementsByTagName(WSDLUtil.Selectors.Output).item(0);
                 Operation operation = new Operation(node.getAttribute("name"));
@@ -43,39 +49,56 @@ public class WSDLProcessor extends DocumentProcessor {
                 // Extracts message parts
                 Element inputMsg = helper.findElementByName(input.getName());
                 Element outputMsg = helper.findElementByName(output.getName());
-                NodeList inputParts = inputMsg.getElementsByTagNameNS("*", "part");
-                NodeList outputParts = outputMsg.getElementsByTagNameNS("*", "part");
+                Set<String> inputFields = extractOperationFields(inputMsg);
+                Set<String> outputFields = extractOperationFields(outputMsg);
 
-                for (int j = 0; j < inputParts.getLength(); j++) {
-                    Element part = (Element) inputParts.item(j);
-                    String partName = part.getAttribute("name");
-                    String elementCheck = part.getAttribute("element");
-                    if (elementCheck == null) {
-                        log.debug("Element is null for " + input.getFullName());
-                        String typeCheck = part.getAttribute("type");
-                        if (typeCheck != null) {
-                            TagName typeTag = new TagName(typeCheck);
-                            if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
-                                log.info("Found primitive type: " + partName);
-                                input.getFieldNames().add(partName);
-                            }
-                        }
-                    } else {
-                        // Find element and process as needed
-                        TagName elementTag = new TagName(elementCheck);
-                        Element el = helper.findElementByName(elementTag.getName());
-                        if (el != null) {
-                            // Flatten into basic types
-                            Set<String> fields = helper.flatten(el);
-                            log.debug(elementTag.getName() + ": " + fields.toString());
-                        }
+                input.setFieldNames(inputFields);
+                output.setFieldNames(outputFields);
+
+                operation.setInput(input);
+                operation.setOutput(output);
+
+                summary.getOperations().add(operation);
+                log.debug("Fields generated for " + node.getAttribute("name") + ": " + inputFields + outputFields);
+            }
+            summaries.add(summary);
+        }
+        log.info("Done processing documents into in-memory summaries");
+        log.debug(String.valueOf(summaries));
+    }
+
+    private Set<String> extractOperationFields(Element partContainer) {
+        Set<String> fields = new HashSet<>();
+        if (partContainer == null) {
+            return fields;
+        }
+        NodeList parts = partContainer.getElementsByTagNameNS("*", "part");
+
+        for (int j = 0; j < parts.getLength(); j++) {
+            Element part = (Element) parts.item(j);
+            String partName = part.getAttribute("name");
+            String elementCheck = part.getAttribute("element");
+            if (elementCheck == null) {
+                String typeCheck = part.getAttribute("type");
+                if (typeCheck != null) {
+                    TagName typeTag = new TagName(typeCheck);
+                    if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
+                        log.info("Found primitive type: " + partName);
+                        fields.add(partName);
                     }
                 }
-
+            } else {
+                // Find element and process as needed
+                TagName elementTag = new TagName(elementCheck);
+                Element el = helper.findElementByName(elementTag.getName());
+                if (el != null) {
+                    // Flatten into basic types
+                    fields.addAll(helper.flatten(el));
+                    log.debug(elementTag.getName() + ": " + fields.toString());
+                }
             }
-
-            // Walk through inputs and outputs, mapping them to messages and further on to their base simple types
         }
+        return fields;
     }
 
     @Override

@@ -2,11 +2,12 @@ package edu.kth.wsglue.models.wsdl;
 
 import org.w3c.dom.Document;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class WSDLSummary {
     private Document documentRef;
-    private Set<Operation> operations;
+    private Set<Operation> operations = new HashSet<>();
     private String serviceName;
 
     public WSDLSummary(Document ref) {
