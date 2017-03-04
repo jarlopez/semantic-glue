@@ -57,7 +57,7 @@ public class WSDLProcessor extends DocumentProcessor {
         NodeList operations = document.getElementsByTagNameNS("*", WSDLUtil.Selectors.Operation);
         for (int i = 0; i < operations.getLength(); i++) {
             Element node = (Element) operations.item(i);
-            if (!Objects.equals(node.getParentNode().getNodeName(), WSDLUtil.Selectors.PortType)) {
+            if (!Objects.equals(node.getParentNode().getLocalName(), WSDLUtil.Selectors.PortType)) {
                 log.debug("Operation node not inside PortType. Skipping");
                 continue;
             }
@@ -76,6 +76,7 @@ public class WSDLProcessor extends DocumentProcessor {
         Message msg = new Message(el.getAttribute("message"));
         Element msgEl = helper.findElementByName(msg.getName());
         Set<String> fields = extractOperationFields(msgEl);
+        log.debug("Fields for " + msg.getName()+ ": " + fields);
         msg.setFieldNames(fields);
         return msg;
     }

@@ -7,8 +7,10 @@ import java.util.Set;
 public class WSDLUtil {
     public static final Set<String> primitiveTypes = new HashSet<>();
 
+    private static final String PRIMITIVE_TYPE_NAMES = "boolean decimal int short long double string date dateTime Array";
+
     static {
-        primitiveTypes.addAll(Arrays.asList("int short long double string date dateTime Array".split(" ")));
+        primitiveTypes.addAll(Arrays.asList(PRIMITIVE_TYPE_NAMES.split(" ")));
     }
 
     public static boolean isPrimitiveType(String test) {
