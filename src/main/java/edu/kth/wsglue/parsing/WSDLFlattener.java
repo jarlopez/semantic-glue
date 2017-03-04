@@ -19,6 +19,7 @@ public class WSDLFlattener {
     static {
         primitiveTypes.addAll(Arrays.asList("int short long double string date dateTime Array".split(" ")));
     }
+
     public static Map flatten(Definitions defs, Part part) {
         HashMap<String, String> rv = new HashMap<>();
         if (defs == null || part == null) {
@@ -109,6 +110,7 @@ public class WSDLFlattener {
                     log.warn("Unknown model for complex type " + ct);
                 }
             } else if (td instanceof BuiltInSchemaType) {
+                log.warn("Unhandled BuiltInSchemaType definition " + td);
 
             } else {
                 log.warn("Unknown type definition " + td);

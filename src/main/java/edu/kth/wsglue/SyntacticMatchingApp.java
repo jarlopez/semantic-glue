@@ -4,7 +4,7 @@ import com.predic8.schema.*;
 import com.predic8.schema.Documentation;
 import com.predic8.schema.Import;
 import com.predic8.wsdl.*;
-import edu.kth.wsglue.generated.WSMatchingType;
+import edu.kth.wsglue.models.generated.WSMatchingType;
 import edu.kth.wsglue.parsing.DocumentMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +15,10 @@ public class SyntacticMatchingApp {
 
     private static final String TEMP_WSDL_0 = "/home/johan/school/2017-p3/web-services/project/WSDLs/FlightwiseAPIProfile.wsdl";
     private static final String TEMP_WSDL_1 = "/home/johan/school/2017-p3/web-services/project/WSDLs/FlightAwareAPIProfile.wsdl";
+    private static final String TEMP_SWSDL_1 = "/home/johan/school/current/web-services/project/SAWSDL/_skilledoccupation_BMWservice.wsdl";
 
     public static void main(String[] args) {
-        String first = TEMP_WSDL_0;
+        String first = TEMP_SWSDL_1;
         String second = TEMP_WSDL_1;
         if  (args.length == 2) {
             first = args[0];

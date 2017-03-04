@@ -6,7 +6,7 @@
 //
 
 
-package edu.kth.wsglue.generated;
+package edu.kth.wsglue.models.generated;
 
 import java.util.ArrayList;
 import java.util.List;

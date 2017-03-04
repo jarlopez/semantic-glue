@@ -6,7 +6,7 @@
 //
 
 
-package edu.kth.wsglue.generated;
+package edu.kth.wsglue.models.generated;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

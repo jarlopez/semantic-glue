@@ -2,9 +2,9 @@ package edu.kth.wsglue.parsing;
 
 import com.predic8.schema.Element;
 import com.predic8.wsdl.*;
-import edu.kth.wsglue.generated.MatchedWebServiceType;
-import edu.kth.wsglue.generated.ObjectFactory;
-import edu.kth.wsglue.generated.WSMatchingType;
+import edu.kth.wsglue.models.generated.MatchedWebServiceType;
+import edu.kth.wsglue.models.generated.ObjectFactory;
+import edu.kth.wsglue.models.generated.WSMatchingType;
 import edu.kth.wsglue.thirdparty.EditDistance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,30 +27,34 @@ public class DocumentMatcher {
         MatchedWebServiceType serviceMatch = factory.createMatchedWebServiceType();
 
         if (first.getServices().size() != 1) {
-            log.warn("Document providing " + first.getServices().get(0).getName() + " has more than one defined service! Using the first one..");
+            log.warn("Document providing " + getFirstServiceName(first) + " has more than one defined service! Using the first one..");
         }
         if (second.getServices().size() != 1) {
-            log.warn("Document providing " + second.getServices().get(0).getName()+ " has more than one defined service! Using the first one..");
+            log.warn("Document providing " + getFirstServiceName(second) + " has more than one defined service! Using the first one..");
         }
 
-        String firstName = first.getServices().get(0).getName();
-        String secondName = second.getServices().get(0).getName();
+        String firstName = getFirstServiceName(first);
+        String secondName = getFirstServiceName(second);
         serviceMatch.setInputServiceName(firstName);
         serviceMatch.setOutputServiceName(secondName);
 
+        Double serviceScore = 0.0;
+
         for (Operation opA : first.getOperations()) {
             for (Operation opB : second.getOperations()) {
+                Double operationScore = 0.0;
+
                 Message outMessage = getMessageFromPortType(first, opA.getOutput());
                 Message inMessage = getMessageFromPortType(second, opB.getInput());
                 if (outMessage.getParts().size() != inMessage.getParts().size()) {
-                    log.debug("Ignoring matching operations " + opA.getName() + " to " + opB.getName() + " because of mismatched inputs/outputs");
-                    continue;
+//                    log.debug("Ignoring matching operations " + opA.getName() + " to " + opB.getName() + " because of mismatched inputs/outputs");
+//                    continue;
                 }
                 // TODO Generalize into a comparator s.t. we can use both syntax and semantics
                 Double opDistance = EditDistance.getSimilarity(opA.getName(), opB.getName());
                 if (!(opDistance >= ED_ACCEPTANCE_THRESHOLD)) {
-                    log.debug("Skipping " + opA.getName() + " --> " + opB.getName());
-                    continue;
+//                    log.debug("Skipping " + opA.getName() + " --> " + opB.getName());
+//                    continue;
                 }
                 log.debug("Edit distance between operations " + opA.getName() + " and " + opB.getName() + " is " + opDistance);
                 Map outputs = new HashMap();
@@ -67,6 +71,8 @@ public class DocumentMatcher {
                 log.debug("Generated input/output maps for " + opA.getName() + " --> " + opB.getName());
                 log.debug(String.valueOf(outputs));
                 log.debug(String.valueOf(inputs));
+                // TODO Match outputs to inputs by syntactic score
+                // TODO Generate operation score, service score
             }
         }
 
@@ -79,7 +85,6 @@ public class DocumentMatcher {
         Definitions second = parser.parse(inputB);
         return generateMatchProfile(first, second);
     }
-
 
     private String getFirstServiceName(Definitions defs) throws Exception {
         if (defs.getServices().size() > 0) {

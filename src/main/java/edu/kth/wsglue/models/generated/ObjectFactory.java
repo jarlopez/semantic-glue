@@ -6,7 +6,7 @@
 //
 
 
-package edu.kth.wsglue.generated;
+package edu.kth.wsglue.models.generated;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
