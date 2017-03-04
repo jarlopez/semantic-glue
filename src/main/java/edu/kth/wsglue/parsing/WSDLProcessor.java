@@ -128,7 +128,6 @@ public class WSDLProcessor extends DocumentProcessor {
 
     @Override
     protected void unload() {
-        System.out.println("unload");
         for (WSMatchingType res : comparisons) {
             log.info("Match for " + res.getMacthing().get(0).getInputServiceName() +
                     " to " + res.getMacthing().get(0).getOutputServiceName());

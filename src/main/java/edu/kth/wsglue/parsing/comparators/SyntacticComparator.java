@@ -21,6 +21,8 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
 
     private ObjectFactory factory = new ObjectFactory();
 
+    private static final Double ED_THRESHOLD = 0.8;
+
     @Override
     public WSMatchingType compare(WSDLSummary o1, WSDLSummary o2) {
         WSMatchingType results = factory.createWSMatchingType();
@@ -40,13 +42,16 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
                 Set<String> inputNames = new HashSet<>(input.getFieldNames());
                 Set<String> outputNames = new HashSet<>(output.getFieldNames());
 
-                Map<String, Pair<String, Integer>> bestMappings = new HashMap<>();
+                Map<String, Pair<String, Double>> bestMappings = new HashMap<>();
 
                 for (String inputName : inputNames) {
-                    // Find best-matching
+                    // Find best-matching outputs for given inputs
                     for (String outputName : outputNames) {
                         Double distance = EditDistance.getSimilarity(inputName, outputName);
-                        log.debug("Distance between " + inputName + ":" + outputName + "=" + distance);
+                        if (distance >= ED_THRESHOLD && distance > bestMappings.getOrDefault(inputName, new Pair<>("", Double.NEGATIVE_INFINITY)).getValue()) {
+                            bestMappings.put(inputName, new Pair<>(outputName, distance));
+                            log.debug("Better distance between " + inputName + ":" + outputName + "=" + distance);
+                        }
                     }
                 }
             }

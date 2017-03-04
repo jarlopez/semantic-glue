@@ -24,5 +24,11 @@ public class WSDLUtil {
         public static final String Operation = "operation";
         public static final String Output = "output";
         public static final String Input = "input";
+
+        public static final String WSDL_Service = WSDL_NS + "service";
+        public static final String WSDL_PortType = WSDL_NS + "portType";
+        public static final String WSDL_Operation = WSDL_NS + "operation";
+        public static final String WSDL_Output = WSDL_NS + "output";
+        public static final String WSDL_Input = WSDL_NS + "input";
     }
 }
