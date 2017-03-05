@@ -2,8 +2,8 @@ package edu.kth.wsglue.parsing;
 
 import edu.kth.wsglue.models.generated.WSMatchingType;
 import edu.kth.wsglue.models.wsdl.*;
-import edu.kth.wsglue.parsing.comparators.FieldGenerator;
-import edu.kth.wsglue.parsing.comparators.NamedFieldGenerator;
+import edu.kth.wsglue.parsing.generators.FieldGenerator;
+import edu.kth.wsglue.parsing.generators.NamedFieldGenerator;
 import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
 import edu.kth.wsglue.parsing.comparators.WsComparator;
 import edu.kth.wsglue.parsing.filters.FilterFunction;
@@ -150,16 +150,13 @@ public class WSDLProcessor extends DocumentProcessor {
                     TagName typeTag = new TagName(typeCheck);
                     if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                         log.info("Found primitive type: " + partName);
-                        // XXX
                         MessageField field = fieldGenerator.generate(partName, part);
                         fields.add(field);
                     } else {
                         // Look it up and process
                         // TODO Prioritize on complex type?
                         Element el = helper.findElementByName(typeTag.getName());
-                        // XXX
                         fields.addAll(helper.flatten(fieldGenerator, el));
-
                     }
                 }
             } else {

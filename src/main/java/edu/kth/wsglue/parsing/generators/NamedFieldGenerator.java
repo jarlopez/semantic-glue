@@ -1,4 +1,4 @@
-package edu.kth.wsglue.parsing.comparators;
+package edu.kth.wsglue.parsing.generators;
 
 import edu.kth.wsglue.models.wsdl.NamedField;
 import org.w3c.dom.Element;

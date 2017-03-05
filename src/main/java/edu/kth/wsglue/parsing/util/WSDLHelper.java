@@ -1,7 +1,7 @@
 package edu.kth.wsglue.parsing.util;
 
 import edu.kth.wsglue.models.wsdl.MessageField;
-import edu.kth.wsglue.parsing.comparators.FieldGenerator;
+import edu.kth.wsglue.parsing.generators.FieldGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

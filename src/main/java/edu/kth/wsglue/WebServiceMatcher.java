@@ -2,7 +2,7 @@ package edu.kth.wsglue;
 
 import edu.kth.wsglue.parsing.UnloadMode;
 import edu.kth.wsglue.parsing.WSDLProcessor;
-import edu.kth.wsglue.parsing.comparators.NamedFieldGenerator;
+import edu.kth.wsglue.parsing.generators.NamedFieldGenerator;
 import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
 import edu.kth.wsglue.parsing.filters.ServiceScoreFilter;
 import org.slf4j.Logger;
