@@ -35,9 +35,9 @@ public abstract class DocumentProcessor {
             "PaymentVisionPayAPIProfile" + SKIP_FILE_DELIM +                // Parse error
             "Looking4ParkingAPIProfile" + SKIP_FILE_DELIM +                 // Parse error
             "DeveloperGardenClickandBuyAPIProfile" + SKIP_FILE_DELIM +      // Parse error
+            "BangoDirectBillingAPIProfile" + SKIP_FILE_DELIM +              // Parse error
             "compositeFlightStatsAPIProfile" + SKIP_FILE_DELIM +            // Too long timeout
-            "GoToBillingAPIProfile" + SKIP_FILE_DELIM +                     // Too long timeout
-            "BangoDirectBillingAPIProfile" + SKIP_FILE_DELIM                // Parse error
+            "GoToBillingAPIProfile" + SKIP_FILE_DELIM                       // Too long timeout
             ;
     static {
         skipList.addAll(Arrays.asList(SKIP_FILES.split(SKIP_FILE_DELIM)));

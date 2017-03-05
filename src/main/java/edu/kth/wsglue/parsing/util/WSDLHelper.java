@@ -63,7 +63,7 @@ public class WSDLHelper {
             String tag = new TagName(el.getTagName()).getName();
             String name = el.getAttribute("name");
             if (name != null) {
-                rv.put(tag + ":" + name, el);
+                rv.put(generateCacheKey(tag, name), el);
                 rv.put(name, el);
             }
         }
@@ -98,7 +98,7 @@ public class WSDLHelper {
             buildElementsCache();
         }
         // TODO Refactor key-gen into function
-        return elementsCache.get(expectedTag + ":" + name);
+        return elementsCache.get(generateCacheKey(expectedTag, name));
     }
 
     /**
@@ -140,6 +140,10 @@ public class WSDLHelper {
             }
         }
         return rv;
+    }
+
+    private String generateCacheKey(String expectedTag, String name) {
+        return expectedTag + ":" + name;
     }
 
 
