@@ -53,7 +53,7 @@ public abstract class WsComparator<T extends MessageField> {
                         Double distance = compare(inputField, outputField);
                         if (distance >= threshold && distance > bestMappings.getOrDefault(inputField, new Pair<>("", Double.NEGATIVE_INFINITY)).getValue()) {
                             bestMappings.put(inputField.getName(), new Pair<>(outputField.getName(), distance));
-                            log.debug("Better distance between " + inputField + ":" + outputField + "=" + distance);
+                            log.debug("Better distance between " + inputField.getName() + ":" + outputField.getName() + "=" + distance);
                         }
                     }
                 }

@@ -156,7 +156,7 @@ public class WSDLProcessor extends DocumentProcessor {
                         // Look it up and process
                         // TODO Prioritize on complex type?
                         Element el = helper.findElementByName(typeTag.getName());
-                        fields.addAll(helper.flatten(fieldGenerator, el));
+                        fields.addAll(helper.flatten(new HashSet<>(), fieldGenerator, el));
                     }
                 }
             } else {
@@ -165,7 +165,7 @@ public class WSDLProcessor extends DocumentProcessor {
                 Element el = helper.findElementByName(elementTag.getName());
                 if (el != null) {
                     // Flatten into basic types
-                    fields.addAll(helper.flatten(fieldGenerator, el));
+                    fields.addAll(helper.flatten(new HashSet<>(), fieldGenerator, el));
                     log.debug(elementTag.getName() + ": " + fields.toString());
                 }
             }

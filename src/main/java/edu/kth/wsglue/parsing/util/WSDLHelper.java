@@ -108,11 +108,17 @@ public class WSDLHelper {
      * @param el the element to flatten
      * @return a set of the names of the underlying fields
      */
-    public Set<MessageField> flatten(FieldGenerator fg, Element el) {
+    public Set<MessageField> flatten(Set<Element> seenElements, FieldGenerator fg, Element el) {
         Set<MessageField> rv = new HashSet<>();
         if (el == null) {
             return rv;
         }
+        if (seenElements.contains(el)) {
+            log.warn("Flattening already-seen element (" + el.getAttribute("name") + "). Breaking the recursion");
+            return rv;
+        }
+        seenElements.add(el);
+
         log.debug("Flattening " + el.getAttribute("name"));
         String typeCheck = el.getAttribute("type");
         if (typeCheck != null && !Objects.equals(typeCheck, "")) {
@@ -134,13 +140,13 @@ public class WSDLHelper {
                     // Now we're in trouble!
                     check = findElementByName(typeTag.getName());
                 }
-                rv.addAll(flatten(fg, check));
+                rv.addAll(flatten(seenElements, fg, check));
             }
         } else {
             // Handle complex case
             NodeList children = el.getElementsByTagNameNS("*", "element");
             for (int i = 0; i < children.getLength(); i++) {
-                rv.addAll(flatten(fg, (Element) children.item(i)));
+                rv.addAll(flatten(seenElements, fg, (Element) children.item(i)));
             }
         }
         return rv;
