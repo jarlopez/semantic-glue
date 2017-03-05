@@ -5,6 +5,7 @@ import edu.kth.wsglue.models.wsdl.Message;
 import edu.kth.wsglue.models.wsdl.Operation;
 import edu.kth.wsglue.models.wsdl.WSDLSummary;
 import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
+import edu.kth.wsglue.parsing.filters.FilterFunction;
 import edu.kth.wsglue.parsing.util.TagName;
 import edu.kth.wsglue.parsing.util.WSDLHelper;
 import edu.kth.wsglue.parsing.util.WSDLUtil;
@@ -21,8 +22,14 @@ import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.util.*;
 
+import static edu.kth.wsglue.parsing.UnloadMode.SystemOut;
+
 public class WSDLProcessor extends DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(WSDLProcessor.class.getName());
+
+    private UnloadMode unloadMode = SystemOut;
+
+    private FilterFunction filter = null;
 
     private List<WSDLSummary> summaries = new ArrayList<>();
 
@@ -30,6 +37,23 @@ public class WSDLProcessor extends DocumentProcessor {
 
     public WSDLProcessor(String wd, String od) {
         super(wd, od);
+    }
+    public WSDLProcessor(String wd, String od, UnloadMode mode) {
+        super(wd, od);
+        unloadMode = mode;
+    }
+    public WSDLProcessor(String wd, String od, UnloadMode mode, FilterFunction filterFunction) {
+        super(wd, od);
+        unloadMode = mode;
+        filter = filterFunction;
+    }
+
+    public UnloadMode getUnloadMode() {
+        return unloadMode;
+    }
+
+    public void setUnloadMode(UnloadMode mode) {
+        unloadMode = mode;
     }
 
     private Set<JAXBElement<WSMatchingType>> comparisons = new HashSet<>();
@@ -132,8 +156,20 @@ public class WSDLProcessor extends DocumentProcessor {
         for (int doc1 = 0; doc1 < summaries.size() - 1; doc1++) {
             for (int doc2 = doc1 + 1; doc2 < summaries.size(); doc2++) {
                 SyntacticComparator sc = new SyntacticComparator();
-                comparisons.add(sc.compare(summaries.get(doc1), summaries.get(doc2)));
-                comparisons.add(sc.compare(summaries.get(doc2), summaries.get(doc1)));
+                JAXBElement<WSMatchingType> match1 = sc.compare(summaries.get(doc1), summaries.get(doc2));
+                JAXBElement<WSMatchingType> match2 = sc.compare(summaries.get(doc1), summaries.get(doc2));
+
+                if (filter != null) {
+                    if (!filter.isProhibited(match1)) {
+                        comparisons.add(match1);
+                    }
+                    if (!filter.isProhibited(match2)) {
+                        comparisons.add(match2);
+                    }
+                } else {
+                    comparisons.add(match1);
+                    comparisons.add(match2);
+                }
             }
         }
     }
@@ -161,13 +197,28 @@ public class WSDLProcessor extends DocumentProcessor {
                     res.getValue().getMacthing().get(0).getOutputServiceName() +
                     ".wsdl";
             try {
-                File outFile = new File(fileName);
-                outFile.getParentFile().mkdirs();
-                m.marshal(res, System.out);
+                switch (unloadMode) {
+                    case File:
+                        File outFile = new File(fileName);
+                        outFile.getParentFile().mkdirs();
+                        m.marshal(res, outFile);
+                        break;
+                    case SystemOut:
+                        m.marshal(res, System.out);
+                        break;
+                }
             } catch (JAXBException jaxbe) {
                 log.warn("Exception when marshalling " + fileName + ". This comparison will be skipped");
                 jaxbe.printStackTrace();
             }
         }
+    }
+
+    public FilterFunction getFilter() {
+        return filter;
+    }
+
+    public void setFilter(FilterFunction filter) {
+        this.filter = filter;
     }
 }

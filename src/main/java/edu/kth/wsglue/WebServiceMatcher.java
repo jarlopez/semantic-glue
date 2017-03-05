@@ -1,7 +1,9 @@
 package edu.kth.wsglue;
 
 import edu.kth.wsglue.parsing.DocumentProcessor;
+import edu.kth.wsglue.parsing.UnloadMode;
 import edu.kth.wsglue.parsing.WSDLProcessor;
+import edu.kth.wsglue.parsing.filters.ServiceScoreFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +27,9 @@ public class WebServiceMatcher {
                 log.warn("Working directory argument does not exists or is not a directory. Using defaults");
             }
         }
-        DocumentProcessor processor = new WSDLProcessor(workingDirectory + WSDL_PATH, workingDirectory + OUTPUT_PATH);
+        String wsdlPath = workingDirectory + WSDL_PATH;
+        String outPath = workingDirectory + OUTPUT_PATH;
+        DocumentProcessor processor = new WSDLProcessor(wsdlPath, outPath, UnloadMode.SystemOut, new ServiceScoreFilter(0.0));
         processor.run();
     }
 
