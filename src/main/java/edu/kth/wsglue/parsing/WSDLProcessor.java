@@ -150,8 +150,12 @@ public class WSDLProcessor extends DocumentProcessor {
                     TagName typeTag = new TagName(typeCheck);
                     if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                         log.info("Found primitive type: " + partName);
-                        MessageField field = fieldGenerator.generate(partName, part);
-                        fields.add(field);
+                        try {
+                            MessageField field = fieldGenerator.generate(partName, part);
+                            fields.add(field);
+                        } catch (FieldGenerator.InvalidFieldException ifex) {
+                            log.warn("InvalidFieldException occurred when creating field " + partName + ", so it will be ignored");
+                        }
                     } else {
                         // Look it up and process
                         // TODO Prioritize on complex type?

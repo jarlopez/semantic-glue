@@ -40,6 +40,9 @@ public class WSDLUtil {
         return primitiveTypes.contains(test);
     }
 
+    public static boolean isEmptyString(String s) {
+        return s == null || "".equals(s.trim());
+    }
     public class Selectors {
         public static final String WSDL_NS = "wsdl:";
         public static final String Service = "service";

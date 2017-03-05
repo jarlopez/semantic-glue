@@ -3,7 +3,6 @@ package edu.kth.wsglue.parsing.comparators;
 import edu.kth.wsglue.models.generated.ObjectFactory;
 import edu.kth.wsglue.models.wsdl.MessageField;
 import edu.kth.wsglue.models.wsdl.SemanticField;
-import edu.kth.wsglue.models.wsdl.WSDLSummary;
 import edu.kth.wsglue.thirdparty.ontology.WSGlueOntologyManager;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLClass;
@@ -12,13 +11,11 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBElement;
 import java.net.URL;
 import java.util.Map;
 
 public class SemanticComparator extends WsComparator<SemanticField> {
     private static final Logger log = LoggerFactory.getLogger(SemanticComparator.class.getName());
-    private static final Double THRESHOLD = 0.5;
 
     private WSGlueOntologyManager manager;
     private OWLOntologyManager ontologyManager;
@@ -76,8 +73,4 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         return res.getScore();
     }
 
-    @Override
-    public JAXBElement compare(WSDLSummary o1, WSDLSummary o2) {
-        return null;
-    }
 }

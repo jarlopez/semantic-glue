@@ -125,8 +125,12 @@ public class WSDLHelper {
             TagName typeTag = new TagName(typeCheck);
             if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                 // XXX TODO
-                MessageField field = fg.generate(el.getAttribute("name"), el);
-                rv.add(field);
+                try {
+                    MessageField field = fg.generate(el.getAttribute("name"), el);
+                    rv.add(field);
+                } catch (FieldGenerator.InvalidFieldException e) {
+                    log.warn("InvalidFieldException occurred when creating field " + el.getAttribute("name") + ", so it will be ignored");
+                }
             } else {
                 log.debug("Looking up type: " + typeTag.getName());
                 Element check = findElementByTagAndName("complexType", typeTag.getName());
@@ -151,7 +155,11 @@ public class WSDLHelper {
                 if (restrictions.getLength() == 1) {
                     // Extract current element as primitive type
                     log.debug("Found element with restrictions: " + el.getAttribute("name") + ". Treating as primitive type");
-                    rv.add(fg.generate(el.getAttribute("name"), el));
+                    try {
+                        rv.add(fg.generate(el.getAttribute("name"), el));
+                    } catch (FieldGenerator.InvalidFieldException e) {
+                        log.warn("InvalidFieldException occurred when creating field " + el.getAttribute("name") + ", so it will be ignored");
+                    }
                 }
 
             } else {
