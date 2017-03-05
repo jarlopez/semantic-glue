@@ -44,14 +44,16 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         SemanticMatchingDegree res = SemanticMatchingDegree.NotMatched;
 
         if (mf1 == null || mf2 == null) {
+            log.warn("Input fields are NULL, returning NotMatched");
             return res.getScore();
         }
         if (!(mf1 instanceof SemanticField) || !(mf2 instanceof SemanticField)) {
+            log.warn("Input fields are not semantic fields, returning NotMatched");
             return res.getScore();
         }
 
-        String s1 = ((SemanticField) mf1).getSemanticReference();
-        String s2 = ((SemanticField) mf2).getSemanticReference();
+        String s1 = ((SemanticField) mf1).getSemanticReference().toLowerCase();
+        String s2 = ((SemanticField) mf2).getSemanticReference().toLowerCase();
 
         OWLClass c1 = ontologyMap.get(s1);
         OWLClass c2 = ontologyMap.get(s2);
