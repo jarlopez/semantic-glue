@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<WSMatching xmlns="http://www.kth.se/ict/id2208/Matching">
+    <Macthing>
+        <OutputServiceName>PersonService</OutputServiceName>
+        <InputServiceName>Academic-item-numberBookauthorService</InputServiceName>
+        <MacthedOperation>
+            <OutputOperationName>get_PERSON</OutputOperationName>
+            <InputOperationName>get_BOOK_AUTHOR</InputOperationName>
+            <OpScore>0.5</OpScore>
+            <MacthedElement>
+                <OutputElement>PersonType</OutputElement>
+                <InputElement>Academic-Item-NumberType</InputElement>
+                <Score>0.5</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <WsScore>0.5</WsScore>
+    </Macthing>
+</WSMatching>

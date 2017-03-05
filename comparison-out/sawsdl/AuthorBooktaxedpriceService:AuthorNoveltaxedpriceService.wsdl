@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<WSMatching xmlns="http://www.kth.se/ict/id2208/Matching">
+    <Macthing>
+        <OutputServiceName>AuthorNoveltaxedpriceService</OutputServiceName>
+        <InputServiceName>AuthorBooktaxedpriceService</InputServiceName>
+        <MacthedOperation>
+            <OutputOperationName>get_NOVEL_TAXEDPRICE</OutputOperationName>
+            <InputOperationName>get_BOOK_TAXEDPRICE</InputOperationName>
+            <OpScore>1.0</OpScore>
+            <MacthedElement>
+                <OutputElement>AuthorType</OutputElement>
+                <InputElement>AuthorType</InputElement>
+                <Score>1.0</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <WsScore>1.0</WsScore>
+    </Macthing>
+</WSMatching>
