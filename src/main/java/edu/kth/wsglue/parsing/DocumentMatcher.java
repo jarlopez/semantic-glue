@@ -102,7 +102,7 @@ public class DocumentMatcher {
             messageName = it.getMessagePrefixedName().getLocalName();
         }
         if (messageName == null) {
-            throw new Exception("Message name is null for port type " + it.toString());
+            throw new Exception("StandardMessage name is null for port type " + it.toString());
         }
         return document.getMessage(messageName);
     }

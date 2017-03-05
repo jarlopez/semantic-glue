@@ -1,9 +1,7 @@
 package edu.kth.wsglue.parsing;
 
 import edu.kth.wsglue.models.generated.WSMatchingType;
-import edu.kth.wsglue.models.wsdl.Message;
-import edu.kth.wsglue.models.wsdl.Operation;
-import edu.kth.wsglue.models.wsdl.WSDLSummary;
+import edu.kth.wsglue.models.wsdl.*;
 import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
 import edu.kth.wsglue.parsing.filters.FilterFunction;
 import edu.kth.wsglue.parsing.util.TagName;
@@ -100,19 +98,19 @@ public class WSDLProcessor extends DocumentProcessor {
         return rv;
     }
 
-    private Message processIO(Element operationNode, String mode) {
+    private StandardMessage processIO(Element operationNode, String mode) {
         Element el = (Element) operationNode.getElementsByTagNameNS("*", String.valueOf(mode)).item(0);
-        Message msg = new Message(el.getAttribute("message"));
+        StandardMessage msg = new StandardMessage(el.getAttribute("message"));
         Element msgEl = helper.findElementByName(msg.getName());
         // TODO Store messages separately in helper
-        Set<String> fields = extractOperationFields(msgEl);
+        Set<MessageField> fields = extractOperationFields(msgEl);
         log.debug("Fields for " + msg.getName()+ ": " + fields);
-        msg.setFieldNames(fields);
+        msg.setFields(fields);
         return msg;
     }
 
-    private Set<String> extractOperationFields(Element partContainer) {
-        Set<String> fields = new HashSet<>();
+    private Set<MessageField> extractOperationFields(Element partContainer) {
+        Set<MessageField> fields = new HashSet<>();
         if (partContainer == null) {
             return fields;
         }
@@ -128,11 +126,13 @@ public class WSDLProcessor extends DocumentProcessor {
                     TagName typeTag = new TagName(typeCheck);
                     if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                         log.info("Found primitive type: " + partName);
-                        fields.add(partName);
+                        // XXX
+                        fields.add(new NamedField(partName));
                     } else {
                         // Look it up and process
                         // TODO Prioritize on complex type?
                         Element el = helper.findElementByName(typeTag.getName());
+                        // XXX
                         fields.addAll(helper.flatten(el));
 
                     }

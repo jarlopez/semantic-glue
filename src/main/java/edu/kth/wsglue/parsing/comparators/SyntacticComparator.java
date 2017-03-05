@@ -1,8 +1,9 @@
 package edu.kth.wsglue.parsing.comparators;
 
 import edu.kth.wsglue.models.generated.*;
-import edu.kth.wsglue.models.wsdl.Message;
+import edu.kth.wsglue.models.wsdl.MessageField;
 import edu.kth.wsglue.models.wsdl.Operation;
+import edu.kth.wsglue.models.wsdl.StandardMessage;
 import edu.kth.wsglue.models.wsdl.WSDLSummary;
 import edu.kth.wsglue.thirdparty.EditDistance;
 import javafx.util.Pair;
@@ -20,7 +21,7 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
 
     private ObjectFactory factory = new ObjectFactory();
 
-    private static final Double ED_THRESHOLD = 0.8;
+    private static final Double THRESHOLD = 0.8;
 
     @Override
     public JAXBElement compare(WSDLSummary outputService, WSDLSummary inputService) {
@@ -35,11 +36,11 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
                 Double operationScore = 0.0;
                 log.debug("Comparing " + outputOperation.getName() + " to " + inputOperation.getName());
 
-                Message output = outputOperation.getOutput();
-                Message input = inputOperation.getInput();
+                StandardMessage output = outputOperation.getOutput();
+                StandardMessage input = inputOperation.getInput();
 
-                Set<String> inputNames = new HashSet<>(input.getFieldNames());
-                Set<String> outputNames = new HashSet<>(output.getFieldNames());
+                Set<MessageField> inputNames = new HashSet<>(input.getFields());
+                Set<MessageField> outputNames = new HashSet<>(output.getFields());
 
                 if (inputNames.size() == 0 || outputNames.size() == 0 || inputNames.size() > outputNames.size()) {
                     log.debug("Skipping due incompatible I/O");
@@ -48,13 +49,13 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
 
                 Map<String, Pair<String, Double>> bestMappings = new HashMap<>();
 
-                for (String inputName : inputNames) {
+                for (MessageField inputField : inputNames) {
                     // Find best-matching outputs for given inputs
-                    for (String outputName : outputNames) {
-                        Double distance = EditDistance.getSimilarity(inputName, outputName);
-                        if (distance >= ED_THRESHOLD && distance > bestMappings.getOrDefault(inputName, new Pair<>("", Double.NEGATIVE_INFINITY)).getValue()) {
-                            bestMappings.put(inputName, new Pair<>(outputName, distance));
-                            log.debug("Better distance between " + inputName + ":" + outputName + "=" + distance);
+                    for (MessageField outputField : outputNames) {
+                        Double distance = compare(inputField, outputField);
+                        if (distance >= THRESHOLD && distance > bestMappings.getOrDefault(inputField, new Pair<>("", Double.NEGATIVE_INFINITY)).getValue()) {
+                            bestMappings.put(inputField.getName(), new Pair<>(outputField.getName(), distance));
+                            log.debug("Better distance between " + inputField + ":" + outputField + "=" + distance);
                         }
                     }
                 }
@@ -89,5 +90,9 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
         serviceMatch.setWsScore(serviceScore);
         results.getMacthing().add(serviceMatch);
         return factory.createWSMatching(results);
+    }
+
+    private Double compare(MessageField mf1, MessageField mf2) {
+        return EditDistance.getSimilarity(mf1.getName(), mf2.getName());
     }
 }

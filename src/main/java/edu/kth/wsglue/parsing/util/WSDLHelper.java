@@ -1,5 +1,7 @@
 package edu.kth.wsglue.parsing.util;
 
+import edu.kth.wsglue.models.wsdl.MessageField;
+import edu.kth.wsglue.models.wsdl.NamedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -106,8 +108,8 @@ public class WSDLHelper {
      * @param el the element to flatten
      * @return a set of the names of the underlying fields
      */
-    public Set<String> flatten(Element el) {
-        Set<String> rv = new HashSet<>();
+    public Set<MessageField> flatten(Element el) {
+        Set<MessageField> rv = new HashSet<>();
         if (el == null) {
             return rv;
         }
@@ -116,7 +118,8 @@ public class WSDLHelper {
         if (typeCheck != null && !Objects.equals(typeCheck, "")) {
             TagName typeTag = new TagName(typeCheck);
             if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
-                rv.add(el.getAttribute("name"));
+                // XXX TODO
+                rv.add(new NamedField(el.getAttribute("name")));
             } else {
                 log.debug("Looking up type: " + typeTag.getName());
                 Element check = findElementByTagAndName("complexType", typeTag.getName());

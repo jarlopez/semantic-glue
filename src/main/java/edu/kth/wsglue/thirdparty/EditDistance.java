@@ -24,6 +24,9 @@ public class EditDistance
 {
     public static int getEditDistance(String s, String t)
     {
+        if (s == null || t == null) {
+            return 0;
+        }
         int d[][];
         int n;
         int m;

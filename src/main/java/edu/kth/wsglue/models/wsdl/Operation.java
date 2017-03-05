@@ -2,8 +2,8 @@ package edu.kth.wsglue.models.wsdl;
 
 public class Operation {
     private String name;
-    private Message input;
-    private Message output;
+    private StandardMessage input;
+    private StandardMessage output;
 
     public Operation() {}
 
@@ -19,19 +19,19 @@ public class Operation {
         this.name = name;
     }
 
-    public Message getInput() {
+    public StandardMessage getInput() {
         return input;
     }
 
-    public void setInput(Message input) {
+    public void setInput(StandardMessage input) {
         this.input = input;
     }
 
-    public Message getOutput() {
+    public StandardMessage getOutput() {
         return output;
     }
 
-    public void setOutput(Message output) {
+    public void setOutput(StandardMessage output) {
         this.output = output;
     }
 }
