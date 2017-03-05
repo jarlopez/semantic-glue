@@ -75,6 +75,7 @@ public class WSDLProcessor extends DocumentProcessor {
         Element el = (Element) operationNode.getElementsByTagNameNS("*", String.valueOf(mode)).item(0);
         Message msg = new Message(el.getAttribute("message"));
         Element msgEl = helper.findElementByName(msg.getName());
+        // TODO Store messages separately in helper
         Set<String> fields = extractOperationFields(msgEl);
         log.debug("Fields for " + msg.getName()+ ": " + fields);
         msg.setFieldNames(fields);
@@ -92,13 +93,19 @@ public class WSDLProcessor extends DocumentProcessor {
             Element part = (Element) parts.item(j);
             String partName = part.getAttribute("name");
             String elementCheck = part.getAttribute("element");
-            if (elementCheck == null) {
+            if (elementCheck == null || elementCheck.equals("")) {
                 String typeCheck = part.getAttribute("type");
                 if (typeCheck != null) {
                     TagName typeTag = new TagName(typeCheck);
                     if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                         log.info("Found primitive type: " + partName);
                         fields.add(partName);
+                    } else {
+                        // Look it up and process
+                        // TODO Prioritize on complex type?
+                        Element el = helper.findElementByName(typeTag.getName());
+                        fields.addAll(helper.flatten(el));
+
                     }
                 }
             } else {
