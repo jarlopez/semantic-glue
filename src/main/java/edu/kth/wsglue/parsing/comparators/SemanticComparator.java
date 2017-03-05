@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBElement;
+import java.net.URL;
 import java.util.Map;
 
 public class SemanticComparator extends WsComparator<SemanticField> {
@@ -29,13 +30,14 @@ public class SemanticComparator extends WsComparator<SemanticField> {
 
     private Map<String, OWLClass> ontologyMap;
 
-    private static final String ONTOLOGY_LOC = "/resources/SUMO.owl";
+    private static final String ONTOLOGY_FILE_NAME = "/SUMO.owl";
 
     public SemanticComparator() {
         super();
+        URL ontologyUrl = this.getClass().getResource(ONTOLOGY_FILE_NAME);
         manager = new WSGlueOntologyManager();
         ontologyManager =  manager.initializeOntologyManager();
-        ontology = manager.initializeOntology(ontologyManager, ONTOLOGY_LOC);
+        ontology = manager.initializeOntology(ontologyManager, "file://" + ontologyUrl.getFile());
         reasoner = manager.initializeReasoner(ontology, ontologyManager);
         ontologyMap = manager.loadClasses(reasoner);
     }

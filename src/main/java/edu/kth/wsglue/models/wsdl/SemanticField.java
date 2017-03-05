@@ -7,7 +7,12 @@ public class SemanticField implements MessageField {
 
     public SemanticField(String name, String semanticReference) {
         this.name = name;
-        this.semanticReference = semanticReference;
+        if (semanticReference != null && (semanticReference.startsWith("http") || semanticReference.contains("#"))) {
+            String[] referenceParts = semanticReference.split("#");
+            this.semanticReference = referenceParts[referenceParts.length - 1];
+        } else {
+            this.semanticReference = semanticReference;
+        }
     }
 
     @Override

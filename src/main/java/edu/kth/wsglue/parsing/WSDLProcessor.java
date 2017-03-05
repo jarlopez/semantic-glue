@@ -181,18 +181,23 @@ public class WSDLProcessor extends DocumentProcessor {
                 JAXBElement<WSMatchingType> match2 = documentComparator.compare(summaries.get(doc1), summaries.get(doc2));
 
                 if (filter != null) {
-                    if (!filter.isProhibited(match1)) {
+                    if (match1 != null && !filter.isProhibited(match1)) {
                         comparisons.add(match1);
                     }
-                    if (!filter.isProhibited(match2)) {
+                    if (match2 != null && !filter.isProhibited(match2)) {
                         comparisons.add(match2);
                     }
                 } else {
-                    comparisons.add(match1);
-                    comparisons.add(match2);
+                    if (match1 != null) {
+                        comparisons.add(match1);
+                    }
+                    if (match2 != null) {
+                        comparisons.add(match2);
+                    }
                 }
             }
         }
+        log.debug("Found " + comparisons.size() + " valid service matches");
     }
 
     @Override
@@ -210,6 +215,23 @@ public class WSDLProcessor extends DocumentProcessor {
         }
 
         for (JAXBElement<WSMatchingType> res : comparisons) {
+            if (res == null) {
+                log.warn("res is null");
+                continue;
+            }
+            if (res.getValue() == null) {
+                log.warn("res.getValue() is null");
+                continue;
+            }
+            if (res.getValue().getMacthing() == null) {
+                log.warn("res.getValue().getMacthing() is null");
+                continue;
+            }
+            if (res.getValue().getMacthing().get(0) == null) {
+                log.warn("res.getValue().getMacthing().get(0) is null");
+                continue;
+            }
+
             log.debug("Match for " + res.getValue().getMacthing().get(0).getInputServiceName() +
                     " to " + res.getValue().getMacthing().get(0).getOutputServiceName());
             String fileName = outputDirectory + "/" +

@@ -2,9 +2,9 @@ package edu.kth.wsglue;
 
 import edu.kth.wsglue.parsing.UnloadMode;
 import edu.kth.wsglue.parsing.WSDLProcessor;
-import edu.kth.wsglue.parsing.generators.NamedFieldGenerator;
-import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
+import edu.kth.wsglue.parsing.comparators.SemanticComparator;
 import edu.kth.wsglue.parsing.filters.ServiceScoreFilter;
+import edu.kth.wsglue.parsing.generators.SemanticFieldGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +28,15 @@ public class WebServiceMatcher {
                 log.warn("Working directory argument does not exists or is not a directory. Using defaults");
             }
         }
-        String wsdlPath = workingDirectory + WSDL_PATH;
+        String wsdlPath = workingDirectory + SAWSDL_PATH;
+//        String wsdlPath = workingDirectory + WSDL_PATH;
         String outPath = workingDirectory + OUTPUT_PATH;
         WSDLProcessor processor = new WSDLProcessor(wsdlPath, outPath);
         processor
                 .withUnloadMode(UnloadMode.SystemOut)
                 .withFilterFunction(new ServiceScoreFilter(0.0))
-                .withFieldGenerator(new NamedFieldGenerator())
-                .withDocumentComparator(new SyntacticComparator())
+                .withFieldGenerator(new SemanticFieldGenerator())
+                .withDocumentComparator(new SemanticComparator())
                 .run();
     }
 
