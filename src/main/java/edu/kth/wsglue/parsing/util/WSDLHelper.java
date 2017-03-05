@@ -145,8 +145,19 @@ public class WSDLHelper {
         } else {
             // Handle complex case
             NodeList children = el.getElementsByTagNameNS("*", "element");
-            for (int i = 0; i < children.getLength(); i++) {
-                rv.addAll(flatten(seenElements, fg, (Element) children.item(i)));
+            if (children.getLength() == 0) {
+                // Might be restricted simple-type (used in SAWSDL)
+                NodeList restrictions = el.getElementsByTagNameNS("*", "restriction");
+                if (restrictions.getLength() == 1) {
+                    // Extract current element as primitive type
+                    log.debug("Found element with restrictions: " + el.getAttribute("name") + ". Treating as primitive type");
+                    rv.add(fg.generate(el.getAttribute("name"), el));
+                }
+
+            } else {
+                for (int i = 0; i < children.getLength(); i++) {
+                    rv.addAll(flatten(seenElements, fg, (Element) children.item(i)));
+                }
             }
         }
         return rv;
