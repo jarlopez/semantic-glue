@@ -12,6 +12,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Abstract base class for comparing two in-memory WSDL service models
+ * @param <T> the message field type which is the comparison target
+ */
 public abstract class WsComparator<T extends MessageField> {
     private static final Logger log = LoggerFactory.getLogger(WsComparator.class.getName());
 
@@ -22,6 +26,21 @@ public abstract class WsComparator<T extends MessageField> {
         threshold = thresh;
     }
 
+    /**
+     * Performs a comparison on the two message fields
+     * @param mf1 the first message field
+     * @param mf2 the second message field
+     * @return a distance metric indicating how similar the fields are
+     */
+    abstract Double compare(MessageField mf1, MessageField mf2);
+
+    /**
+     * Walks through all operations in two WSDL models and calculates
+     * the output-to-input similarity between them.
+     * @param outputService the WSDL model which is providing a service
+     * @param inputService the WSDL model which is consuming a service
+     * @return a wrapped JAXBElement which describes the similarity between the two services.
+     */
     public JAXBElement compare(WSDLSummary outputService, WSDLSummary inputService) {
         WSMatchingType results = factory.createWSMatchingType();
         MatchedWebServiceType serviceMatch = factory.createMatchedWebServiceType();
@@ -57,6 +76,7 @@ public abstract class WsComparator<T extends MessageField> {
                         }
                     }
                 }
+                // Convert the mappings into JAXB-compatible objects
                 if (bestMappings.size() == inputNames.size()) {
                     MatchedOperationType operationMatch = factory.createMatchedOperationType();
                     for (Map.Entry<String, Pair<String, Double>> match : bestMappings.entrySet()) {
@@ -89,7 +109,5 @@ public abstract class WsComparator<T extends MessageField> {
         results.getMacthing().add(serviceMatch);
         return factory.createWSMatching(results);
     }
-
-    abstract Double compare(MessageField mf1, MessageField mf2);
 
 }

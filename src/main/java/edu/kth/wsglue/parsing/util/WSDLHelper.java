@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
 import java.util.*;
 
 /**
- * Helper class for managing nodes in a document and caching results.
+ * Helper class for managing nodes in a document and caching important nodes
  */
 public class WSDLHelper {
     private static final Logger log = LoggerFactory.getLogger(WSDLHelper.class.getName());
@@ -42,7 +42,7 @@ public class WSDLHelper {
     }
 
     /**
-     * Finds all elements (simple, complex, element, message, part) and stores them in in-memory map.
+     * Finds all elements (simple, complex, element, message, part) and stores them in in-memory map
      */
     private void buildElementsCache() {
         NodeList complexTypes = document.getElementsByTagNameNS("*","complexType");
@@ -58,6 +58,12 @@ public class WSDLHelper {
         staleCache = false;
     }
 
+    /**
+     * Generates a map of key-value pairs of element name (and type) to the actual element.
+     * Note that each entry is created twice: once with the name, and again with its type prepended to it
+     * @param elements the elements to be used in the map
+     * @return the map of name-to-node pairs
+     */
     private Map<String, Element> nodeListToNameMap(NodeList elements) {
         Map<String, Element> rv = new HashMap<>();
         for (int i = 0; i < elements.getLength(); i++) {
@@ -99,14 +105,15 @@ public class WSDLHelper {
             log.warn("Forcing a rebuild of the elements cache");
             buildElementsCache();
         }
-        // TODO Refactor key-gen into function
         return elementsCache.get(generateCacheKey(expectedTag, name));
     }
 
     /**
      * Recursively looks up and flattens an element into its most basic fields and primitive types.
+     * @param seenElements set of already-seen elements to allow breaking out of infinite recursions
+     * @param fg the field generator responsible for creating new fields when base types are found
      * @param el the element to flatten
-     * @return a set of the names of the underlying fields
+     * @return
      */
     public Set<MessageField> flatten(Set<Element> seenElements, FieldGenerator fg, Element el) {
         Set<MessageField> rv = new HashSet<>();
@@ -124,7 +131,6 @@ public class WSDLHelper {
         if (typeCheck != null && !Objects.equals(typeCheck, "")) {
             TagName typeTag = new TagName(typeCheck);
             if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
-                // XXX TODO
                 try {
                     MessageField field = fg.generate(el.getAttribute("name"), el);
                     rv.add(field);
@@ -174,6 +180,5 @@ public class WSDLHelper {
     private String generateCacheKey(String expectedTag, String name) {
         return expectedTag + ":" + name;
     }
-
 
 }

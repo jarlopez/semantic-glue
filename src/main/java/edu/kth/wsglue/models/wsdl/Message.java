@@ -1,4 +1,6 @@
 package edu.kth.wsglue.models.wsdl;
 
-public interface Message {
-}
+/**
+ * Generic interface for WSDL messages
+ */
+interface Message {}

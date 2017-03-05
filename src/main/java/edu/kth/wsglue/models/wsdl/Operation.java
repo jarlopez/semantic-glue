@@ -1,11 +1,12 @@
 package edu.kth.wsglue.models.wsdl;
 
+/**
+ * Represents a WSDL operation. Used when parsing the document model
+ */
 public class Operation {
     private String name;
     private StandardMessage input;
     private StandardMessage output;
-
-    public Operation() {}
 
     public Operation(String name) {
         this.name = name;

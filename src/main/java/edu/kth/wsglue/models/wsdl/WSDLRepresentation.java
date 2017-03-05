@@ -1,5 +1,6 @@
 package edu.kth.wsglue.models.wsdl;
 
-public interface WSDLRepresentation {
-
-}
+/**
+ * Generic in-memory representation of a WSDL document
+ */
+public interface WSDLRepresentation {}

@@ -181,7 +181,7 @@ public class WSGlueOntologyManager {
                     for (Set<OWLDescription> setDomainX : setSetDomainX)
                         for (OWLDescription domainX : setDomainX) {
                          /*	System.out.println("	" + prop1.getURI().getFragment() + " : " + descr1.asOWLClass().getURI().getFragment() +
-		 							" <->  " + descr2.asOWLClass().getURI().getFragment()); */
+                                     " <->  " + descr2.asOWLClass().getURI().getFragment()); */
                             if (reasoner.isEquivalentClass(domainX, clsX)) {
                                 System.out.println(clsX.asOWLClass().getURI().getFragment() + "(" + domainX.asOWLClass().getURI().getFragment() + " ) "
                                         + " hasProperty<"

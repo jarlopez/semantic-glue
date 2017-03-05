@@ -1,5 +1,8 @@
 package edu.kth.wsglue.parsing.util;
 
+/**
+ * Container class for an XML tag with a (possible) prefix and a tag name
+ */
 public class TagName {
         private String prefix;
         private String name;

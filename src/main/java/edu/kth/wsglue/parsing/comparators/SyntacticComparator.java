@@ -3,11 +3,11 @@ package edu.kth.wsglue.parsing.comparators;
 
 import edu.kth.wsglue.models.wsdl.MessageField;
 import edu.kth.wsglue.thirdparty.EditDistance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Simple comparator which calculates the edit distance between two WSDL message fields
+ */
 public class SyntacticComparator extends WsComparator<MessageField> {
-    private static final Logger log = LoggerFactory.getLogger(SyntacticComparator.class.getName());
 
     @Override
     protected Double compare(MessageField mf1, MessageField mf2) {

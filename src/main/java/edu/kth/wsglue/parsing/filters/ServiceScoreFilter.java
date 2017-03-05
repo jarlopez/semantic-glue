@@ -11,10 +11,6 @@ public class ServiceScoreFilter implements FilterFunction {
      */
     private Double threshold = 0.0;
 
-    public ServiceScoreFilter() {
-        super();
-    }
-
     public ServiceScoreFilter(Double thresh) {
         super();
         threshold = thresh;

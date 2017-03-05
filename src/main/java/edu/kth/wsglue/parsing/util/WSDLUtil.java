@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Container class for commonly-used strings and methods
+ */
 public class WSDLUtil {
     public static final Set<String> primitiveTypes = new HashSet<>();
 
@@ -43,6 +46,7 @@ public class WSDLUtil {
     public static boolean isEmptyString(String s) {
         return s == null || "".equals(s.trim());
     }
+
     public class Selectors {
         public static final String WSDL_NS = "wsdl:";
         public static final String Service = "service";

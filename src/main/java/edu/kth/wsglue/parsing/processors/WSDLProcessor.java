@@ -1,4 +1,4 @@
-package edu.kth.wsglue.parsing;
+package edu.kth.wsglue.parsing.processors;
 
 import edu.kth.wsglue.models.generated.WSMatchingType;
 import edu.kth.wsglue.models.wsdl.*;
@@ -23,12 +23,17 @@ import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.util.*;
 
-import static edu.kth.wsglue.parsing.UnloadMode.SystemOut;
-
+/**
+ * Processor for WSDL and SAWSDL-enabled WSDL documents.
+ * Responsible for:
+ *      - Specifying how to transform the documents into a custom in-memory model
+ *      - Providing a mechanism for comparing the resulting models
+ *      - Unloading the model comparison results (persisting to disk, to an IO-stream, etc.)
+ */
 public class WSDLProcessor extends DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(WSDLProcessor.class.getName());
 
-    private UnloadMode unloadMode = SystemOut;
+    private UnloadMode unloadMode = UnloadMode.SystemOut;
 
     private FilterFunction filter = null;
     private FieldGenerator fieldGenerator = null;
@@ -41,10 +46,12 @@ public class WSDLProcessor extends DocumentProcessor {
     public WSDLProcessor(String wd, String od) {
         super(wd, od);
     }
+
     public WSDLProcessor(String wd, String od, UnloadMode mode) {
         super(wd, od);
         unloadMode = mode;
     }
+
     public WSDLProcessor(String wd, String od, UnloadMode mode, FilterFunction filterFunction) {
         super(wd, od);
         unloadMode = mode;
@@ -76,6 +83,14 @@ public class WSDLProcessor extends DocumentProcessor {
 
     public void setUnloadMode(UnloadMode mode) {
         unloadMode = mode;
+    }
+
+    public FilterFunction getFilter() {
+        return filter;
+    }
+
+    public void setFilter(FilterFunction filter) {
+        this.filter = filter;
     }
 
     private Set<JAXBElement<WSMatchingType>> comparisons = new HashSet<>();
@@ -184,6 +199,7 @@ public class WSDLProcessor extends DocumentProcessor {
                 JAXBElement<WSMatchingType> match1 = documentComparator.compare(summaries.get(doc1), summaries.get(doc2));
                 JAXBElement<WSMatchingType> match2 = documentComparator.compare(summaries.get(doc1), summaries.get(doc2));
 
+                // TODO Clean up this terrible if-then logic
                 if (filter != null) {
                     if (match1 != null && !filter.isProhibited(match1)) {
                         comparisons.add(match1);
@@ -219,23 +235,6 @@ public class WSDLProcessor extends DocumentProcessor {
         }
 
         for (JAXBElement<WSMatchingType> res : comparisons) {
-            if (res == null) {
-                log.warn("res is null");
-                continue;
-            }
-            if (res.getValue() == null) {
-                log.warn("res.getValue() is null");
-                continue;
-            }
-            if (res.getValue().getMacthing() == null) {
-                log.warn("res.getValue().getMacthing() is null");
-                continue;
-            }
-            if (res.getValue().getMacthing().get(0) == null) {
-                log.warn("res.getValue().getMacthing().get(0) is null");
-                continue;
-            }
-
             log.debug("Match for " + res.getValue().getMacthing().get(0).getInputServiceName() +
                     " to " + res.getValue().getMacthing().get(0).getOutputServiceName());
             String fileName = outputDirectory + "/" +
@@ -261,11 +260,4 @@ public class WSDLProcessor extends DocumentProcessor {
         }
     }
 
-    public FilterFunction getFilter() {
-        return filter;
-    }
-
-    public void setFilter(FilterFunction filter) {
-        this.filter = filter;
-    }
 }

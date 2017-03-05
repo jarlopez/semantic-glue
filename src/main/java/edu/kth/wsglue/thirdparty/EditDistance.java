@@ -2,13 +2,13 @@ package edu.kth.wsglue.thirdparty;
 
 /**
  * Copyright 2010 Websoft research group, Nanjing University, PR China
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- *     
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,8 @@ package edu.kth.wsglue.thirdparty;
  * @author Wei Hu
  * @see http://ws.nju.edu.cn
  */
-public class EditDistance
-{
-    public static int getEditDistance(String s, String t)
-    {
+public class EditDistance {
+    public static int getEditDistance(String s, String t) {
         if (s == null || t == null) {
             return 0;
         }
@@ -63,15 +61,14 @@ public class EditDistance
                     cost = 1;
                 }
                 d[i][j] = Minimum(
-                		d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+                        d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
             }
         }
         return d[n][m];
 
     }
 
-    private static int Minimum(int a, int b, int c)
-    {
+    private static int Minimum(int a, int b, int c) {
         int mi;
         mi = a;
         if (b < mi) {
@@ -83,8 +80,7 @@ public class EditDistance
         return mi;
     }
 
-    public static double getSimilarity(String s, String t)
-    {
+    public static double getSimilarity(String s, String t) {
         int edit = EditDistance.getEditDistance(s, t);
         double sim = 1 / Math.exp(edit / (double) (s.length() + t.length() - edit));
         return sim;

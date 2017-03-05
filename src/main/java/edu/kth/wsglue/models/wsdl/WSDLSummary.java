@@ -5,6 +5,10 @@ import org.w3c.dom.Document;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Models an in-memory WSDL representation with a focus on
+ * operations, messages, and input/output fields
+ */
 public class WSDLSummary implements WSDLRepresentation {
     private Document documentRef;
     private String fileName;

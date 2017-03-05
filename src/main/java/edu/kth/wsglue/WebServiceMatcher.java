@@ -1,7 +1,7 @@
 package edu.kth.wsglue;
 
-import edu.kth.wsglue.parsing.UnloadMode;
-import edu.kth.wsglue.parsing.WSDLProcessor;
+import edu.kth.wsglue.parsing.processors.UnloadMode;
+import edu.kth.wsglue.parsing.processors.WSDLProcessor;
 import edu.kth.wsglue.parsing.comparators.SemanticComparator;
 import edu.kth.wsglue.parsing.filters.ServiceScoreFilter;
 import edu.kth.wsglue.parsing.generators.SemanticFieldGenerator;
@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-
+/**
+ * Main launcher of the WSDL and SAWSDL document processor
+ */
 public class WebServiceMatcher {
     private static final Logger log = LoggerFactory.getLogger(WebServiceMatcher.class.getName());
 

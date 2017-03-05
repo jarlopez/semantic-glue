@@ -1,4 +1,4 @@
-package edu.kth.wsglue.parsing;
+package edu.kth.wsglue.parsing.processors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +13,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 
+/**
+ * Base class for WSDL processors, which are responsible for the ETL pipeline of
+ * WSDL documents. That is,
+ *      - Parsing documents into memory models
+ *      - Translating DOM trees into a custom model
+ *      - Running comparisons between in-memory web service representations
+ *      - Unloading the comparison results
+ */
 public abstract class DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class.getName());
 
@@ -26,7 +34,7 @@ public abstract class DocumentProcessor {
 
     private static final String FILETYPE_EXT = ".wsdl";
     private static final long PARSE_TIMEOUT_MS = 20000;
-    private static final long DEBUG_MAX_FILES = 10000;
+    private static final long DEBUG_MAX_FILES = Long.MAX_VALUE;
 
     private static Set<String> skipList = new HashSet<>();
     private static final String SKIP_FILE_DELIM = "\r\n";
@@ -67,6 +75,21 @@ public abstract class DocumentProcessor {
         cleanup();
     }
 
+    /**
+     * Transforms in-memory documents into workable models.
+     */
+    protected abstract void transform();
+
+    /**
+     * Begins document comparison.
+     */
+    protected abstract void compare();
+
+    /**
+     * Persists the results of the document comparison.
+     */
+    protected abstract void unload();
+
     public void cleanup() {
         executor.shutdownNow();
         try {
@@ -85,6 +108,7 @@ public abstract class DocumentProcessor {
         File [] files = dir.listFiles((dir1, name) -> name.endsWith(FILETYPE_EXT));
 
         assert files != null : "No " + FILETYPE_EXT + " files exist in " + workingDirectory;
+
         int debugIndex = 0;
         for (File wsdlFile : files) {
             if (skipList.contains(wsdlFile.getName().split(FILETYPE_EXT)[0])) {
@@ -96,6 +120,7 @@ public abstract class DocumentProcessor {
                 log.debug("Breaking out of loop due to DEBUG_MAX_FILES");
                 break;
             }
+
             try {
                 log.debug("Parsing " + wsdlFile.getName());
                 Document document = buildDocument(wsdlFile);
@@ -127,18 +152,4 @@ public abstract class DocumentProcessor {
         return document;
     }
 
-    /**
-     * Transforms in-memory documents into workable models.
-     */
-    protected abstract void transform();
-
-    /**
-     * Begins document comparison.
-     */
-    protected abstract void compare();
-
-    /**
-     * Persists the results of the document comparison.
-     */
-    protected abstract void unload();
 }

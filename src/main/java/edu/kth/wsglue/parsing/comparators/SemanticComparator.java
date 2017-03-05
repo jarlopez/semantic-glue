@@ -1,6 +1,5 @@
 package edu.kth.wsglue.parsing.comparators;
 
-import edu.kth.wsglue.models.generated.ObjectFactory;
 import edu.kth.wsglue.models.wsdl.MessageField;
 import edu.kth.wsglue.models.wsdl.SemanticField;
 import edu.kth.wsglue.thirdparty.ontology.WSGlueOntologyManager;
@@ -14,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.Map;
 
+/**
+ * Comparator for semantically-related WSDL input/output fields
+ */
 public class SemanticComparator extends WsComparator<SemanticField> {
     private static final Logger log = LoggerFactory.getLogger(SemanticComparator.class.getName());
 
@@ -21,13 +23,11 @@ public class SemanticComparator extends WsComparator<SemanticField> {
     private OWLOntologyManager ontologyManager;
     private OWLOntology ontology;
     private Reasoner reasoner;
-
-    private ObjectFactory factory = new ObjectFactory();
-
-
     private Map<String, OWLClass> ontologyMap;
 
+    private static final Double SEMANTIC_THRESHOLD = 0.5;
     private static final String ONTOLOGY_FILE_NAME = "/SUMO.owl";
+
 
     public SemanticComparator() {
         super();
@@ -37,6 +37,7 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         ontology = manager.initializeOntology(ontologyManager, "file://" + ontologyUrl.getFile());
         reasoner = manager.initializeReasoner(ontology, ontologyManager);
         ontologyMap = manager.loadClasses(reasoner);
+        setThreshold(SEMANTIC_THRESHOLD);
     }
 
     @Override
