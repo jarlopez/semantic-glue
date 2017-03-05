@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-public class MyOntManager {
+public class WSGlueOntologyManager {
 
     public OWLOntologyManager initializeOntologyManager() {
         OWLOntologyManager manager = OWLManager.createOWLOntologyManager();

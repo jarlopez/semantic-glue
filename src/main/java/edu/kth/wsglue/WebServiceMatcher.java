@@ -29,7 +29,7 @@ public class WebServiceMatcher {
         }
         String wsdlPath = workingDirectory + WSDL_PATH;
         String outPath = workingDirectory + OUTPUT_PATH;
-        DocumentProcessor processor = new WSDLProcessor(wsdlPath, outPath, UnloadMode.SystemOut, new ServiceScoreFilter(0.0));
+        DocumentProcessor processor = new WSDLProcessor(wsdlPath, outPath, UnloadMode.File, new ServiceScoreFilter(0.0));
         processor.run();
     }
 

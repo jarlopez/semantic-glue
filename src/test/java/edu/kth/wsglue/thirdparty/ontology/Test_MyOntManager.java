@@ -20,12 +20,12 @@ public class Test_MyOntManager {
     private static OWLOntology ontology = null;
     private static Reasoner reasoner = null;
     private static String ontLocation = "file:///home/johan/school/2017-p3/web-services/project/src/main/resources/travel.owl";
-    private static MyOntManager ontsum = null;
+    private static WSGlueOntologyManager ontsum = null;
 
 
     @BeforeClass
     public static void initializeOntology() {
-        ontsum = new MyOntManager();
+        ontsum = new WSGlueOntologyManager();
         manager = ontsum.initializeOntologyManager();
         ontology = ontsum.initializeOntology(manager, ontLocation);
         reasoner = ontsum.initializeReasoner(ontology, manager);
