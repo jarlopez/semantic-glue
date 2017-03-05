@@ -4,7 +4,7 @@
         <OutputServiceName>ACHWorksWS</OutputServiceName>
         <InputServiceName>SubscriberInfoWSService</InputServiceName>
         <MacthedOperation>
-            <OutputOperationName>GetResultFile</OutputOperationName>
+            <OutputOperationName>SendACHTrans</OutputOperationName>
             <InputOperationName>exportAllRecords</InputOperationName>
             <OpScore>0.9355069850316177</OpScore>
             <MacthedElement>
@@ -24,26 +24,6 @@
             </MacthedElement>
         </MacthedOperation>
         <MacthedOperation>
-            <OutputOperationName>SendACHTransBatch</OutputOperationName>
-            <InputOperationName>exportAllRecords</InputOperationName>
-            <OpScore>0.9355069850316177</OpScore>
-            <MacthedElement>
-                <OutputElement>FileName</OutputElement>
-                <InputElement>fileName</InputElement>
-                <Score>0.9355069850316177</Score>
-            </MacthedElement>
-        </MacthedOperation>
-        <MacthedOperation>
-            <OutputOperationName>SendACHTrans</OutputOperationName>
-            <InputOperationName>exportAllRecords</InputOperationName>
-            <OpScore>0.9355069850316177</OpScore>
-            <MacthedElement>
-                <OutputElement>FileName</OutputElement>
-                <InputElement>fileName</InputElement>
-                <Score>0.9355069850316177</Score>
-            </MacthedElement>
-        </MacthedOperation>
-        <MacthedOperation>
             <OutputOperationName>SendIATACHTransBatch</OutputOperationName>
             <InputOperationName>exportAllRecords</InputOperationName>
             <OpScore>0.9355069850316177</OpScore>
@@ -54,7 +34,7 @@
             </MacthedElement>
         </MacthedOperation>
         <MacthedOperation>
-            <OutputOperationName>DeleteACHTransBatch</OutputOperationName>
+            <OutputOperationName>SendACHTransBatch</OutputOperationName>
             <InputOperationName>exportAllRecords</InputOperationName>
             <OpScore>0.9355069850316177</OpScore>
             <MacthedElement>
@@ -65,6 +45,26 @@
         </MacthedOperation>
         <MacthedOperation>
             <OutputOperationName>SendACHTransBatchBin</OutputOperationName>
+            <InputOperationName>exportAllRecords</InputOperationName>
+            <OpScore>0.9355069850316177</OpScore>
+            <MacthedElement>
+                <OutputElement>FileName</OutputElement>
+                <InputElement>fileName</InputElement>
+                <Score>0.9355069850316177</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <MacthedOperation>
+            <OutputOperationName>GetResultFile</OutputOperationName>
+            <InputOperationName>exportAllRecords</InputOperationName>
+            <OpScore>0.9355069850316177</OpScore>
+            <MacthedElement>
+                <OutputElement>FileName</OutputElement>
+                <InputElement>fileName</InputElement>
+                <Score>0.9355069850316177</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <MacthedOperation>
+            <OutputOperationName>DeleteACHTransBatch</OutputOperationName>
             <InputOperationName>exportAllRecords</InputOperationName>
             <OpScore>0.9355069850316177</OpScore>
             <MacthedElement>
