@@ -1,8 +1,6 @@
 package edu.kth.wsglue.parsing.comparators;
 
-import edu.kth.wsglue.models.generated.MatchedWebServiceType;
-import edu.kth.wsglue.models.generated.ObjectFactory;
-import edu.kth.wsglue.models.generated.WSMatchingType;
+import edu.kth.wsglue.models.generated.*;
 import edu.kth.wsglue.models.wsdl.Message;
 import edu.kth.wsglue.models.wsdl.Operation;
 import edu.kth.wsglue.models.wsdl.WSDLSummary;
@@ -24,23 +22,28 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
     private static final Double ED_THRESHOLD = 0.8;
 
     @Override
-    public WSMatchingType compare(WSDLSummary o1, WSDLSummary o2) {
+    public WSMatchingType compare(WSDLSummary outputService, WSDLSummary inputService) {
         WSMatchingType results = factory.createWSMatchingType();
         MatchedWebServiceType serviceMatch = factory.createMatchedWebServiceType();
-        serviceMatch.setOutputServiceName(o1.getServiceName());
-        serviceMatch.setInputServiceName(o2.getServiceName());
+        serviceMatch.setOutputServiceName(outputService.getServiceName());
+        serviceMatch.setInputServiceName(inputService.getServiceName());
 
         Double serviceScore = 0.0;
-        for (Operation op1 : o1.getOperations()) {
-            for (Operation op2: o2.getOperations()) {
+        for (Operation outputOperation : outputService.getOperations()) {
+            for (Operation inputOperation: inputService.getOperations()) {
                 Double operationScore = 0.0;
-                log.debug("Comparing " + op1.getName() + " to " + op2.getName());
+                log.debug("Comparing " + outputOperation.getName() + " to " + inputOperation.getName());
 
-                Message output = op1.getOutput();
-                Message input = op2.getInput();
+                Message output = outputOperation.getOutput();
+                Message input = inputOperation.getInput();
 
                 Set<String> inputNames = new HashSet<>(input.getFieldNames());
                 Set<String> outputNames = new HashSet<>(output.getFieldNames());
+
+                if (inputNames.size() == 0 || outputNames.size() == 0 || inputNames.size() > outputNames.size()) {
+                    log.debug("Skipping due incompatible I/O");
+                    continue;
+                }
 
                 Map<String, Pair<String, Double>> bestMappings = new HashMap<>();
 
@@ -54,9 +57,35 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
                         }
                     }
                 }
+                if (bestMappings.size() == inputNames.size()) {
+                    MatchedOperationType operationMatch = factory.createMatchedOperationType();
+                    for (Map.Entry<String, Pair<String, Double>> match : bestMappings.entrySet()) {
+                        operationScore += match.getValue().getValue();
+
+                        MatchedElementType matchedEl = factory.createMatchedElementType();
+
+                        matchedEl.setInputElement(match.getKey());
+                        matchedEl.setOutputElement(match.getValue().getKey());
+
+                        matchedEl.setScore(match.getValue().getValue());
+
+                        operationMatch.getMacthedElement().add(matchedEl);
+                    }
+
+                    operationScore = operationScore / bestMappings.size();
+                    serviceScore += operationScore;
+
+                    operationMatch.setOutputOperationName(outputOperation.getName());
+                    operationMatch.setInputOperationName(inputOperation.getName());
+                    operationMatch.setOpScore(operationScore);
+                    serviceMatch.getMacthedOperation().add(operationMatch);
+                }
             }
         }
-
+        if (serviceMatch.getMacthedOperation().size() > 0) {
+            serviceScore = serviceScore / serviceMatch.getMacthedOperation().size();
+        }
+        serviceMatch.setWsScore(serviceScore);
         results.getMacthing().add(serviceMatch);
         return results;
     }
