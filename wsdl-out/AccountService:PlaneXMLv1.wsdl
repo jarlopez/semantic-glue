@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<WSMatching xmlns="http://www.kth.se/ict/id2208/Matching">
+    <Macthing>
+        <OutputServiceName>PlaneXMLv1</OutputServiceName>
+        <InputServiceName>AccountService</InputServiceName>
+        <MacthedOperation>
+            <OutputOperationName>Registration</OutputOperationName>
+            <InputOperationName>getAccount</InputOperationName>
+            <OpScore>0.9574533680683808</OpScore>
+            <MacthedElement>
+                <OutputElement>SerialNumber</OutputElement>
+                <InputElement>serialNumber</InputElement>
+                <Score>0.9574533680683808</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <MacthedOperation>
+            <OutputOperationName>Registration</OutputOperationName>
+            <InputOperationName>getAccount</InputOperationName>
+            <OpScore>0.9574533680683808</OpScore>
+            <MacthedElement>
+                <OutputElement>SerialNumber</OutputElement>
+                <InputElement>serialNumber</InputElement>
+                <Score>0.9574533680683808</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <WsScore>0.9574533680683808</WsScore>
+    </Macthing>
+</WSMatching>
