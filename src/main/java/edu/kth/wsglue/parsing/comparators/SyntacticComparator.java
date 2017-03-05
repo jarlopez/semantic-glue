@@ -9,6 +9,7 @@ import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBElement;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
     private static final Double ED_THRESHOLD = 0.8;
 
     @Override
-    public WSMatchingType compare(WSDLSummary outputService, WSDLSummary inputService) {
+    public JAXBElement compare(WSDLSummary outputService, WSDLSummary inputService) {
         WSMatchingType results = factory.createWSMatchingType();
         MatchedWebServiceType serviceMatch = factory.createMatchedWebServiceType();
         serviceMatch.setOutputServiceName(outputService.getServiceName());
@@ -87,6 +88,6 @@ public class SyntacticComparator implements WsComparator<WSDLSummary> {
         }
         serviceMatch.setWsScore(serviceScore);
         results.getMacthing().add(serviceMatch);
-        return results;
+        return factory.createWSMatching(results);
     }
 }

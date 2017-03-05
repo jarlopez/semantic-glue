@@ -11,6 +11,7 @@ import java.io.File;
 public class WebServiceMatcher {
     private static final Logger log = LoggerFactory.getLogger(WebServiceMatcher.class.getName());
 
+    private static final String OUTPUT_PATH = "/wsdl-out";
     private static final String WSDL_PATH = "/WSDLs";
     private static final String SAWSDL_PATH = "/SAWSDL";
 
@@ -24,7 +25,7 @@ public class WebServiceMatcher {
                 log.warn("Working directory argument does not exists or is not a directory. Using defaults");
             }
         }
-        DocumentProcessor processor = new WSDLProcessor(workingDirectory + WSDL_PATH);
+        DocumentProcessor processor = new WSDLProcessor(workingDirectory + WSDL_PATH, workingDirectory + OUTPUT_PATH);
         processor.run();
     }
 

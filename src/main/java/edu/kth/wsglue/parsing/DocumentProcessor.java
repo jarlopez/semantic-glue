@@ -17,11 +17,12 @@ public abstract class DocumentProcessor {
     private static final Logger log = LoggerFactory.getLogger(DocumentProcessor.class.getName());
 
     protected List<Document> documents = new ArrayList<>();
+    protected String workingDirectory;
+    protected String outputDirectory;
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private static DocumentBuilder documentBuilder;
 
-    private String workingDirectory;
 
     private static final String FILETYPE_EXT = ".wsdl";
     private static final long PARSE_TIMEOUT_MS = 20000;
@@ -43,8 +44,9 @@ public abstract class DocumentProcessor {
         skipList.addAll(Arrays.asList(SKIP_FILES.split(SKIP_FILE_DELIM)));
     }
 
-    public DocumentProcessor(String wd) {
+    public DocumentProcessor(String wd, String od) {
         workingDirectory = wd;
+        outputDirectory = od;
 
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

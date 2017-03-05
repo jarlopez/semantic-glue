@@ -1,8 +1,9 @@
 package edu.kth.wsglue.parsing.comparators;
 
-import edu.kth.wsglue.models.generated.WSMatchingType;
 import edu.kth.wsglue.models.wsdl.WSDLRepresentation;
 
+import javax.xml.bind.JAXBElement;
+
 public interface WsComparator<T extends WSDLRepresentation> {
-    WSMatchingType compare(T o1, T o2);
+    JAXBElement compare(T o1, T o2);
 }

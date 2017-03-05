@@ -14,6 +14,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import java.io.File;
 import java.util.*;
 
 public class WSDLProcessor extends DocumentProcessor {
@@ -23,11 +28,11 @@ public class WSDLProcessor extends DocumentProcessor {
 
     private WSDLHelper helper = new WSDLHelper();
 
-    public WSDLProcessor(String wd) {
-        super(wd);
+    public WSDLProcessor(String wd, String od) {
+        super(wd, od);
     }
 
-    private Set<WSMatchingType> comparisons = new HashSet<>();
+    private Set<JAXBElement<WSMatchingType>> comparisons = new HashSet<>();
 
     @Override
     protected void transform() {
@@ -135,9 +140,34 @@ public class WSDLProcessor extends DocumentProcessor {
 
     @Override
     protected void unload() {
-        for (WSMatchingType res : comparisons) {
-            log.info("Match for " + res.getMacthing().get(0).getInputServiceName() +
-                    " to " + res.getMacthing().get(0).getOutputServiceName());
+        JAXBContext context;
+        Marshaller m;
+        try {
+            context = JAXBContext.newInstance(WSMatchingType.class);
+            m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        } catch (JAXBException jaxbe) {
+            log.error("JAXB Exception when creating marshaller. Cannot continue persisting comparisons to WSDL format");
+            jaxbe.printStackTrace();
+            return;
+        }
+
+        for (JAXBElement<WSMatchingType> res : comparisons) {
+            log.debug("Match for " + res.getValue().getMacthing().get(0).getInputServiceName() +
+                    " to " + res.getValue().getMacthing().get(0).getOutputServiceName());
+            String fileName = outputDirectory + "/" +
+                    res.getValue().getMacthing().get(0).getInputServiceName() +
+                    ":" +
+                    res.getValue().getMacthing().get(0).getOutputServiceName() +
+                    ".wsdl";
+            try {
+                File outFile = new File(fileName);
+                outFile.getParentFile().mkdirs();
+                m.marshal(res, System.out);
+            } catch (JAXBException jaxbe) {
+                log.warn("Exception when marshalling " + fileName + ". This comparison will be skipped");
+                jaxbe.printStackTrace();
+            }
         }
     }
 }
