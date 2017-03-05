@@ -2,6 +2,8 @@ package edu.kth.wsglue.parsing;
 
 import edu.kth.wsglue.models.generated.WSMatchingType;
 import edu.kth.wsglue.models.wsdl.*;
+import edu.kth.wsglue.parsing.comparators.FieldGenerator;
+import edu.kth.wsglue.parsing.comparators.NamedFieldGenerator;
 import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
 import edu.kth.wsglue.parsing.filters.FilterFunction;
 import edu.kth.wsglue.parsing.util.TagName;
@@ -28,6 +30,7 @@ public class WSDLProcessor extends DocumentProcessor {
     private UnloadMode unloadMode = SystemOut;
 
     private FilterFunction filter = null;
+    private FieldGenerator fieldGenerator = null;
 
     private List<WSDLSummary> summaries = new ArrayList<>();
 
@@ -44,6 +47,7 @@ public class WSDLProcessor extends DocumentProcessor {
         super(wd, od);
         unloadMode = mode;
         filter = filterFunction;
+        fieldGenerator = new NamedFieldGenerator();
     }
 
     public UnloadMode getUnloadMode() {
@@ -127,13 +131,14 @@ public class WSDLProcessor extends DocumentProcessor {
                     if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                         log.info("Found primitive type: " + partName);
                         // XXX
-                        fields.add(new NamedField(partName));
+                        MessageField field = fieldGenerator.generate(partName, part);
+                        fields.add(field);
                     } else {
                         // Look it up and process
                         // TODO Prioritize on complex type?
                         Element el = helper.findElementByName(typeTag.getName());
                         // XXX
-                        fields.addAll(helper.flatten(el));
+                        fields.addAll(helper.flatten(fieldGenerator, el));
 
                     }
                 }
@@ -143,7 +148,7 @@ public class WSDLProcessor extends DocumentProcessor {
                 Element el = helper.findElementByName(elementTag.getName());
                 if (el != null) {
                     // Flatten into basic types
-                    fields.addAll(helper.flatten(el));
+                    fields.addAll(helper.flatten(fieldGenerator, el));
                     log.debug(elementTag.getName() + ": " + fields.toString());
                 }
             }

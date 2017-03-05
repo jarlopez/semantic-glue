@@ -1,7 +1,7 @@
 package edu.kth.wsglue.parsing.util;
 
 import edu.kth.wsglue.models.wsdl.MessageField;
-import edu.kth.wsglue.models.wsdl.NamedField;
+import edu.kth.wsglue.parsing.comparators.FieldGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -108,7 +108,7 @@ public class WSDLHelper {
      * @param el the element to flatten
      * @return a set of the names of the underlying fields
      */
-    public Set<MessageField> flatten(Element el) {
+    public Set<MessageField> flatten(FieldGenerator fg, Element el) {
         Set<MessageField> rv = new HashSet<>();
         if (el == null) {
             return rv;
@@ -119,7 +119,8 @@ public class WSDLHelper {
             TagName typeTag = new TagName(typeCheck);
             if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                 // XXX TODO
-                rv.add(new NamedField(el.getAttribute("name")));
+                MessageField field = fg.generate(el.getAttribute("name"), el);
+                rv.add(field);
             } else {
                 log.debug("Looking up type: " + typeTag.getName());
                 Element check = findElementByTagAndName("complexType", typeTag.getName());
@@ -133,13 +134,13 @@ public class WSDLHelper {
                     // Now we're in trouble!
                     check = findElementByName(typeTag.getName());
                 }
-                rv.addAll(flatten(check));
+                rv.addAll(flatten(fg, check));
             }
         } else {
             // Handle complex case
             NodeList children = el.getElementsByTagNameNS("*", "element");
             for (int i = 0; i < children.getLength(); i++) {
-                rv.addAll(flatten((Element) children.item(i)));
+                rv.addAll(flatten(fg, (Element) children.item(i)));
             }
         }
         return rv;
