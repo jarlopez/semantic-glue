@@ -1,8 +1,9 @@
 package edu.kth.wsglue;
 
-import edu.kth.wsglue.parsing.DocumentProcessor;
 import edu.kth.wsglue.parsing.UnloadMode;
 import edu.kth.wsglue.parsing.WSDLProcessor;
+import edu.kth.wsglue.parsing.comparators.NamedFieldGenerator;
+import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
 import edu.kth.wsglue.parsing.filters.ServiceScoreFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +30,13 @@ public class WebServiceMatcher {
         }
         String wsdlPath = workingDirectory + WSDL_PATH;
         String outPath = workingDirectory + OUTPUT_PATH;
-        DocumentProcessor processor = new WSDLProcessor(wsdlPath, outPath, UnloadMode.File, new ServiceScoreFilter(0.0));
-        processor.run();
+        WSDLProcessor processor = new WSDLProcessor(wsdlPath, outPath);
+        processor
+                .withUnloadMode(UnloadMode.SystemOut)
+                .withFilterFunction(new ServiceScoreFilter(0.0))
+                .withFieldGenerator(new NamedFieldGenerator())
+                .withDocumentComparator(new SyntacticComparator())
+                .run();
     }
 
 }

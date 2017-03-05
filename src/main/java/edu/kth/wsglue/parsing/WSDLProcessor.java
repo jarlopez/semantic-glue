@@ -5,6 +5,7 @@ import edu.kth.wsglue.models.wsdl.*;
 import edu.kth.wsglue.parsing.comparators.FieldGenerator;
 import edu.kth.wsglue.parsing.comparators.NamedFieldGenerator;
 import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
+import edu.kth.wsglue.parsing.comparators.WsComparator;
 import edu.kth.wsglue.parsing.filters.FilterFunction;
 import edu.kth.wsglue.parsing.util.TagName;
 import edu.kth.wsglue.parsing.util.WSDLHelper;
@@ -31,6 +32,7 @@ public class WSDLProcessor extends DocumentProcessor {
 
     private FilterFunction filter = null;
     private FieldGenerator fieldGenerator = null;
+    private WsComparator documentComparator = null;
 
     private List<WSDLSummary> summaries = new ArrayList<>();
 
@@ -48,6 +50,24 @@ public class WSDLProcessor extends DocumentProcessor {
         unloadMode = mode;
         filter = filterFunction;
         fieldGenerator = new NamedFieldGenerator();
+        documentComparator = new SyntacticComparator();
+    }
+
+    public WSDLProcessor withUnloadMode(UnloadMode mode) {
+        unloadMode = mode;
+        return this;
+    }
+    public WSDLProcessor withFilterFunction(FilterFunction filterFunction) {
+        filter = filterFunction;
+        return this;
+    }
+    public WSDLProcessor withFieldGenerator(FieldGenerator generator) {
+        fieldGenerator = generator;
+        return this;
+    }
+    public WSDLProcessor withDocumentComparator(WsComparator comparator) {
+        documentComparator = comparator;
+        return this;
     }
 
     public UnloadMode getUnloadMode() {
@@ -160,9 +180,8 @@ public class WSDLProcessor extends DocumentProcessor {
     protected void compare() {
         for (int doc1 = 0; doc1 < summaries.size() - 1; doc1++) {
             for (int doc2 = doc1 + 1; doc2 < summaries.size(); doc2++) {
-                SyntacticComparator sc = new SyntacticComparator();
-                JAXBElement<WSMatchingType> match1 = sc.compare(summaries.get(doc1), summaries.get(doc2));
-                JAXBElement<WSMatchingType> match2 = sc.compare(summaries.get(doc1), summaries.get(doc2));
+                JAXBElement<WSMatchingType> match1 = documentComparator.compare(summaries.get(doc1), summaries.get(doc2));
+                JAXBElement<WSMatchingType> match2 = documentComparator.compare(summaries.get(doc1), summaries.get(doc2));
 
                 if (filter != null) {
                     if (!filter.isProhibited(match1)) {
