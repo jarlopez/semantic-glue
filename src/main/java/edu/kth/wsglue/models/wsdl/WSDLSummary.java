@@ -7,11 +7,17 @@ import java.util.Set;
 
 public class WSDLSummary implements WSDLRepresentation {
     private Document documentRef;
+    private String fileName;
     private Set<Operation> operations = new HashSet<>();
     private String serviceName;
 
     public WSDLSummary(Document ref) {
         documentRef = ref;
+        String uri = ref.getDocumentURI();
+        if (uri != null) {
+            String[] path = uri.split("/"); // NOT Windows compatible
+            fileName = path[path.length - 1];
+        }
     }
 
     public Document getDocumentRef() {
@@ -36,5 +42,13 @@ public class WSDLSummary implements WSDLRepresentation {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }
