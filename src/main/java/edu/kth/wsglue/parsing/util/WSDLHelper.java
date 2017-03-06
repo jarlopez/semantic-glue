@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.*;
 import java.util.*;
 
 /**
@@ -108,6 +109,68 @@ public class WSDLHelper {
         return elementsCache.get(WSDLUtil.generateCacheKey(expectedTag, name));
     }
 
+    private Set<MessageField> extractSemanticOperationFields(FieldGenerator fg, Element partContainer) throws XPathExpressionException {
+        Set<MessageField> fields = new HashSet<>();
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        XPathExpression expr = expr = xpath.compile("//*[@*[local-name()='modelReference']]");
+        NodeList semanticTypes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+
+        Map<String, Element> semanticTypesCache = new HashMap<>();
+        semanticTypesCache.putAll(nodeListToNameMap(semanticTypes));
+
+
+        return fields;
+    }
+
+    private Set<MessageField> extractBaseOperationFields(FieldGenerator fg, Element partContainer) {
+        Set<MessageField> fields = new HashSet<>();
+        if (partContainer == null) {
+            return fields;
+        }
+        NodeList parts = partContainer.getElementsByTagNameNS("*", "part");
+
+        for (int j = 0; j < parts.getLength(); j++) {
+            Element part = (Element) parts.item(j);
+            String partName = part.getAttribute("name");
+            String elementCheck = part.getAttribute("element");
+            if (elementCheck == null || elementCheck.equals("")) {
+                String typeCheck = part.getAttribute("type");
+                if (typeCheck != null) {
+                    TagName typeTag = new TagName(typeCheck);
+                    if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
+                        log.info("Found primitive type: " + partName);
+                        try {
+                            MessageField field = fg.generate(partName, part);
+                            fields.add(field);
+                        } catch (FieldGenerator.InvalidFieldException ifex) {
+                            log.warn("InvalidFieldException occurred when creating field " + partName + ", so it will be ignored");
+                        }
+                    } else {
+                        // Look it up and process
+                        // TODO Prioritize on complex type?
+                        Element el = findElementByName(typeTag.getName());
+                        fields.addAll(flatten(new HashSet<>(), fg, el));
+                    }
+                }
+            } else {
+                // Find element and process as needed
+                TagName elementTag = new TagName(elementCheck);
+                Element el = findElementByName(elementTag.getName());
+                if (el != null) {
+                    // Flatten into basic types
+                    fields.addAll(flatten(new HashSet<>(), fg, el));
+                    log.debug(elementTag.getName() + ": " + fields.toString());
+                }
+            }
+        }
+        return fields;
+    }
+
+
+    public Set<MessageField> extractOperationFields(FieldGenerator fg, Element partContainer) {
+        return extractBaseOperationFields(fg, partContainer);
+    }
+
     /**
      * Recursively looks up and flattens an element into its most basic fields and primitive types.
      * @param seenElements set of already-seen elements to allow breaking out of infinite recursions
@@ -127,50 +190,59 @@ public class WSDLHelper {
         seenElements.add(el);
 
         log.debug("Flattening " + el.getAttribute("name"));
-        String typeCheck = el.getAttribute("type");
-        if (typeCheck != null && !Objects.equals(typeCheck, "")) {
-            TagName typeTag = new TagName(typeCheck);
-            if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
-                try {
-                    MessageField field = fg.generate(el.getAttribute("name"), el);
-                    rv.add(field);
-                } catch (FieldGenerator.InvalidFieldException e) {
-                    log.warn("InvalidFieldException occurred when creating field " + el.getAttribute("name") + ", so it will be ignored");
-                }
-            } else {
-                log.debug("Looking up type: " + typeTag.getName());
-                Element check = findElementByTagAndName("complexType", typeTag.getName());
-                if (check == null) {
-                    check = findElementByTagAndName("simpleType", typeTag.getName());
-                }
-                if (check == null) {
-                    check = findElementByTagAndName("element", typeTag.getName());
-                }
-                if (check == null) {
-                    // Now we're in trouble!
-                    check = findElementByName(typeTag.getName());
-                }
-                rv.addAll(flatten(seenElements, fg, check));
+        if (el.hasAttribute("sawsdl:modelReference")) {
+            try {
+                rv.add(fg.generate(el.getAttribute("name"), el));
+                log.debug("Successfully added semantic type " + el.getAttribute("name") + ": " + el.getTagName());
+            } catch (FieldGenerator.InvalidFieldException e) {
+                log.warn("InvalidFieldException occurred when creating field " + el.getAttribute("name") + ", so it will be ignored");
             }
         } else {
-            // Handle complex case
-            NodeList children = el.getElementsByTagNameNS("*", "element");
-            if (children.getLength() == 0) {
-                // Might be restricted simple-type (used in SAWSDL)
-                NodeList restrictions = el.getElementsByTagNameNS("*", "restriction");
-                if (restrictions.getLength() == 1) {
-                    // Extract current element as primitive type
-                    log.debug("Found element with restrictions: " + el.getAttribute("name") + ". Treating as primitive type");
+            String typeCheck = el.getAttribute("type");
+            if (typeCheck != null && !Objects.equals(typeCheck, "")) {
+                TagName typeTag = new TagName(typeCheck);
+                if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
                     try {
-                        rv.add(fg.generate(el.getAttribute("name"), el));
+                        MessageField field = fg.generate(el.getAttribute("name"), el);
+                        rv.add(field);
                     } catch (FieldGenerator.InvalidFieldException e) {
                         log.warn("InvalidFieldException occurred when creating field " + el.getAttribute("name") + ", so it will be ignored");
                     }
+                } else {
+                    log.debug("Looking up type: " + typeTag.getName());
+                    Element check = findElementByTagAndName("complexType", typeTag.getName());
+                    if (check == null) {
+                        check = findElementByTagAndName("simpleType", typeTag.getName());
+                    }
+                    if (check == null) {
+                        check = findElementByTagAndName("element", typeTag.getName());
+                    }
+                    if (check == null) {
+                        // Now we're in trouble!
+                        check = findElementByName(typeTag.getName());
+                    }
+                    rv.addAll(flatten(seenElements, fg, check));
                 }
-
             } else {
-                for (int i = 0; i < children.getLength(); i++) {
-                    rv.addAll(flatten(seenElements, fg, (Element) children.item(i)));
+                // Handle complex case
+                NodeList children = el.getElementsByTagNameNS("*", "element");
+                if (children.getLength() == 0) {
+                    // Might be restricted simple-type (used in SAWSDL)
+                    NodeList restrictions = el.getElementsByTagNameNS("*", "restriction");
+                    if (restrictions.getLength() == 1) {
+                        // Extract current element as primitive type
+                        log.debug("Found element with restrictions: " + el.getAttribute("name") + ". Treating as primitive type");
+                        try {
+                            rv.add(fg.generate(el.getAttribute("name"), el));
+                        } catch (FieldGenerator.InvalidFieldException e) {
+                            log.warn("InvalidFieldException occurred when creating field " + el.getAttribute("name") + ", so it will be ignored");
+                        }
+                    }
+
+                } else {
+                    for (int i = 0; i < children.getLength(); i++) {
+                        rv.addAll(flatten(seenElements, fg, (Element) children.item(i)));
+                    }
                 }
             }
         }

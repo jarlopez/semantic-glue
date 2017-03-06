@@ -1,13 +1,15 @@
 package edu.kth.wsglue.parsing.processors;
 
 import edu.kth.wsglue.models.generated.WSMatchingType;
-import edu.kth.wsglue.models.wsdl.*;
-import edu.kth.wsglue.parsing.generators.FieldGenerator;
-import edu.kth.wsglue.parsing.generators.NamedFieldGenerator;
+import edu.kth.wsglue.models.wsdl.MessageField;
+import edu.kth.wsglue.models.wsdl.Operation;
+import edu.kth.wsglue.models.wsdl.StandardMessage;
+import edu.kth.wsglue.models.wsdl.WSDLSummary;
 import edu.kth.wsglue.parsing.comparators.SyntacticComparator;
 import edu.kth.wsglue.parsing.comparators.WsComparator;
 import edu.kth.wsglue.parsing.filters.FilterFunction;
-import edu.kth.wsglue.parsing.util.TagName;
+import edu.kth.wsglue.parsing.generators.FieldGenerator;
+import edu.kth.wsglue.parsing.generators.NamedFieldGenerator;
 import edu.kth.wsglue.parsing.util.WSDLHelper;
 import edu.kth.wsglue.parsing.util.WSDLUtil;
 import org.slf4j.Logger;
@@ -142,54 +144,10 @@ public class WSDLProcessor extends DocumentProcessor {
         StandardMessage msg = new StandardMessage(el.getAttribute("message"));
         Element msgEl = helper.findElementByName(msg.getName());
         // TODO Store messages separately in helper
-        Set<MessageField> fields = extractOperationFields(msgEl);
+        Set<MessageField> fields = helper.extractOperationFields(fieldGenerator, msgEl);
         log.debug("Fields for " + msg.getName()+ ": " + fields);
         msg.setFields(fields);
         return msg;
-    }
-
-    private Set<MessageField> extractOperationFields(Element partContainer) {
-        Set<MessageField> fields = new HashSet<>();
-        if (partContainer == null) {
-            return fields;
-        }
-        NodeList parts = partContainer.getElementsByTagNameNS("*", "part");
-
-        for (int j = 0; j < parts.getLength(); j++) {
-            Element part = (Element) parts.item(j);
-            String partName = part.getAttribute("name");
-            String elementCheck = part.getAttribute("element");
-            if (elementCheck == null || elementCheck.equals("")) {
-                String typeCheck = part.getAttribute("type");
-                if (typeCheck != null) {
-                    TagName typeTag = new TagName(typeCheck);
-                    if (WSDLUtil.isPrimitiveType(typeTag.getName())) {
-                        log.info("Found primitive type: " + partName);
-                        try {
-                            MessageField field = fieldGenerator.generate(partName, part);
-                            fields.add(field);
-                        } catch (FieldGenerator.InvalidFieldException ifex) {
-                            log.warn("InvalidFieldException occurred when creating field " + partName + ", so it will be ignored");
-                        }
-                    } else {
-                        // Look it up and process
-                        // TODO Prioritize on complex type?
-                        Element el = helper.findElementByName(typeTag.getName());
-                        fields.addAll(helper.flatten(new HashSet<>(), fieldGenerator, el));
-                    }
-                }
-            } else {
-                // Find element and process as needed
-                TagName elementTag = new TagName(elementCheck);
-                Element el = helper.findElementByName(elementTag.getName());
-                if (el != null) {
-                    // Flatten into basic types
-                    fields.addAll(helper.flatten(new HashSet<>(), fieldGenerator, el));
-                    log.debug(elementTag.getName() + ": " + fields.toString());
-                }
-            }
-        }
-        return fields;
     }
 
     @Override
