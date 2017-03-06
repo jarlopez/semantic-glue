@@ -47,6 +47,11 @@ public class WSDLUtil {
         return s == null || "".equals(s.trim());
     }
 
+
+    public static String generateCacheKey(String s1, String s2) {
+        return s1 + ":" + s2;
+    }
+
     public class Selectors {
         public static final String WSDL_NS = "wsdl:";
         public static final String Service = "service";

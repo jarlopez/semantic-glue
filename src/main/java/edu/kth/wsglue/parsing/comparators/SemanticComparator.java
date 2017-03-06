@@ -2,6 +2,7 @@ package edu.kth.wsglue.parsing.comparators;
 
 import edu.kth.wsglue.models.wsdl.MessageField;
 import edu.kth.wsglue.models.wsdl.SemanticField;
+import edu.kth.wsglue.parsing.util.WSDLUtil;
 import edu.kth.wsglue.thirdparty.ontology.WSGlueOntologyManager;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLClass;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +43,7 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         banker
     */
     private Set<String> badClasses = new HashSet<>();
+    private Map<String, SemanticMatchingDegree> matchCache = new HashMap<>();
 
     public SemanticComparator() {
         super();
@@ -70,7 +73,6 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         String s2 = ((SemanticField) mf2).getSemanticReference().toLowerCase();
 
 
-
         OWLClass c1 = ontologyMap.get(s1);
         OWLClass c2 = ontologyMap.get(s2);
 
@@ -94,6 +96,12 @@ public class SemanticComparator extends WsComparator<SemanticField> {
             return res.getScore();
         }
 
+        String cacheKey = WSDLUtil.generateCacheKey(s1, s2);
+        if (matchCache.containsKey(cacheKey)) {
+            log.debug("Cache hit for " + cacheKey);
+            return matchCache.get(cacheKey).getScore();
+        }
+
         Integer comparison = c1.compareTo(c2);
         if (comparison == 0) {
             res = SemanticMatchingDegree.Exact;
@@ -104,6 +112,8 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         } else if (manager.findRelationship(c1, c2, reasoner).size() != 0) {
             res = SemanticMatchingDegree.Structural;
         }
+
+        matchCache.put(cacheKey, res);
 
         return res.getScore();
     }
