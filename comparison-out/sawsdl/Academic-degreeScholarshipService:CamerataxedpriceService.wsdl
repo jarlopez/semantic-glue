@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<WSMatching xmlns="http://www.kth.se/ict/id2208/Matching">
+    <Macthing>
+        <OutputServiceName>CamerataxedpriceService</OutputServiceName>
+        <InputServiceName>Academic-degreeScholarshipService</InputServiceName>
+        <MacthedOperation>
+            <OutputOperationName>get_CAMERA_TAXEDPRICE</OutputOperationName>
+            <InputOperationName>get_SCHOLARSHIP</InputOperationName>
+            <OpScore>1.0</OpScore>
+            <MacthedElement>
+                <OutputElement>Academic-Degree</OutputElement>
+                <InputElement>Academic-DegreeType</InputElement>
+                <Score>1.0</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <WsScore>1.0</WsScore>
+    </Macthing>
+</WSMatching>

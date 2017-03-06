@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<WSMatching xmlns="http://www.kth.se/ict/id2208/Matching">
+    <Macthing>
+        <OutputServiceName>DigitalstandardpricepriceService</OutputServiceName>
+        <InputServiceName>Academic-degreeScholarshipdurationService</InputServiceName>
+        <MacthedOperation>
+            <OutputOperationName>get_DIGITAL_STANDARD_PRICE_PRICE1</OutputOperationName>
+            <InputOperationName>get_SCHOLARSHIP_DURATION</InputOperationName>
+            <OpScore>1.0</OpScore>
+            <MacthedElement>
+                <OutputElement>Academic-Degree</OutputElement>
+                <InputElement>Academic-DegreeType</InputElement>
+                <Score>1.0</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <WsScore>1.0</WsScore>
+    </Macthing>
+</WSMatching>

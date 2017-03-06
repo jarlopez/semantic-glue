@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<WSMatching xmlns="http://www.kth.se/ict/id2208/Matching">
+    <Macthing>
+        <OutputServiceName>AcademicAddressService</OutputServiceName>
+        <InputServiceName>Academic-degreeFundingService</InputServiceName>
+        <MacthedOperation>
+            <OutputOperationName>get_ADDRESS</OutputOperationName>
+            <InputOperationName>get_FUNDING</InputOperationName>
+            <OpScore>1.0</OpScore>
+            <MacthedElement>
+                <OutputElement>Academic-Degree</OutputElement>
+                <InputElement>Academic-DegreeType</InputElement>
+                <Score>1.0</Score>
+            </MacthedElement>
+        </MacthedOperation>
+        <WsScore>1.0</WsScore>
+    </Macthing>
+</WSMatching>
