@@ -20,6 +20,8 @@ public class WebServiceMatcher {
     private static final String WSDL_PATH = "/WSDLs";
     private static final String SAWSDL_PATH = "/SAWSDL";
 
+    private static final Double MIN_SERVICE_SCORE = 0.5;
+
     private enum ExecutionMode {
         WSDL,
         SAWSDL,
@@ -69,7 +71,7 @@ public class WebServiceMatcher {
         WSDLProcessor processor = new WSDLProcessor(wsdlPath, out);
         processor
                 .withUnloadMode(mode)
-                .withFilterFunction(new ServiceScoreFilter(0.0))
+                .withFilterFunction(new ServiceScoreFilter(MIN_SERVICE_SCORE))
                 .withFieldGenerator(new SemanticFieldGenerator())
                 .withDocumentComparator(new SemanticComparator())
                 .run();
@@ -83,7 +85,7 @@ public class WebServiceMatcher {
         WSDLProcessor processor = new WSDLProcessor(wsdlPath, out);
         processor
                 .withUnloadMode(mode)
-                .withFilterFunction(new ServiceScoreFilter(0.0))
+                .withFilterFunction(new ServiceScoreFilter(MIN_SERVICE_SCORE))
                 .withFieldGenerator(new NamedFieldGenerator())
                 .withDocumentComparator(new SyntacticComparator())
                 .run();

@@ -64,7 +64,6 @@ public abstract class WsComparator<T extends MessageField> {
                     log.debug("Skipping due incompatible I/O");
                     continue;
                 }
-//                log.debug("Comparing " + outputOperation.getName() + " to " + inputOperation.getName());
 
                 Map<String, Pair<String, Double>> bestMappings = new HashMap<>();
 
