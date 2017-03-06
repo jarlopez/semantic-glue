@@ -47,11 +47,12 @@ public abstract class WsComparator<T extends MessageField> {
         serviceMatch.setOutputServiceName(outputService.getServiceName());
         serviceMatch.setInputServiceName(inputService.getServiceName());
 
+        log.info("Comparing outputs of " + serviceMatch.getOutputServiceName() + " to inputs of " + serviceMatch.getInputServiceName());
+
         Double serviceScore = 0.0;
         for (Operation outputOperation : outputService.getOperations()) {
             for (Operation inputOperation: inputService.getOperations()) {
                 Double operationScore = 0.0;
-                log.debug("Comparing " + outputOperation.getName() + " to " + inputOperation.getName());
 
                 StandardMessage output = outputOperation.getOutput();
                 StandardMessage input = inputOperation.getInput();
@@ -63,6 +64,7 @@ public abstract class WsComparator<T extends MessageField> {
                     log.debug("Skipping due incompatible I/O");
                     continue;
                 }
+//                log.debug("Comparing " + outputOperation.getName() + " to " + inputOperation.getName());
 
                 Map<String, Pair<String, Double>> bestMappings = new HashMap<>();
 

@@ -6,5 +6,6 @@ package edu.kth.wsglue.parsing.processors;
  */
 public enum UnloadMode {
     File,
-    SystemOut
+    SystemOut,
+    None
 }

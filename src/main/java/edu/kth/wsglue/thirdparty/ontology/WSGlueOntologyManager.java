@@ -180,16 +180,8 @@ public class WSGlueOntologyManager {
                     Set<Set<OWLDescription>> setSetDomainX = reasoner.getDomains(prop1);
                     for (Set<OWLDescription> setDomainX : setSetDomainX)
                         for (OWLDescription domainX : setDomainX) {
-                         /*	System.out.println("	" + prop1.getURI().getFragment() + " : " + descr1.asOWLClass().getURI().getFragment() +
-                                     " <->  " + descr2.asOWLClass().getURI().getFragment()); */
                             if (reasoner.isEquivalentClass(domainX, clsX)) {
-                                System.out.println(clsX.asOWLClass().getURI().getFragment() + "(" + domainX.asOWLClass().getURI().getFragment() + " ) "
-                                        + " hasProperty<"
-                                        + prop1.getURI().getFragment() + ">  " +
-                                        clsY.asOWLClass().getURI().getFragment() + " ( " + rangeY.asOWLClass().getURI().getFragment() + " ) ");
-                                //return prop1;
                                 relationships.add(prop1);
-
                             }
                         }
                 }
@@ -201,14 +193,5 @@ public class WSGlueOntologyManager {
         All,  // incorporate all
         Sibeling //
     }
-
-
-//	public MatchingScore getMatchingScore(String clsName1, String clsName2, HashMap<String, OWLClass> mapName_OWLClass,
-//			Reasoner reasoner, LUBType type) {
-//		OWLClass cls1 = mapName_OWLClass.get(clsName1.toLowerCase());
-//		OWLClass cls2 = mapName_OWLClass.get(clsName2.toLowerCase());
-//		return getMatchingScore(cls1, cls2, reasoner, type);
-//	}
-
 
 }

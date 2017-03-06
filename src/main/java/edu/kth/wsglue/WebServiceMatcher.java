@@ -31,7 +31,7 @@ public class WebServiceMatcher {
         String out = cwd + OUTPUT_PATH;
 
         ExecutionMode executionMode = ExecutionMode.Hybrid;
-        UnloadMode unloadMode = UnloadMode.SystemOut;
+        UnloadMode unloadMode = UnloadMode.None;
         if (args.length > 0) {
             String mode = args[0].toLowerCase();
             switch (mode) {

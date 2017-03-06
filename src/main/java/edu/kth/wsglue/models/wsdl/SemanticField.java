@@ -49,4 +49,11 @@ public class SemanticField implements MessageField {
         return semanticReference;
     }
 
+    @Override
+    public String toString() {
+        return "SemanticField{" +
+                "name='" + name + '\'' +
+                ", semanticReference='" + semanticReference + '\'' +
+                '}';
+    }
 }

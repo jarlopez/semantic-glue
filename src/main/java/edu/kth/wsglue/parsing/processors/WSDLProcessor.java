@@ -235,8 +235,8 @@ public class WSDLProcessor extends DocumentProcessor {
         }
 
         for (JAXBElement<WSMatchingType> res : comparisons) {
-            log.debug("Match for " + res.getValue().getMacthing().get(0).getInputServiceName() +
-                    " to " + res.getValue().getMacthing().get(0).getOutputServiceName());
+//            log.debug("Match for " + res.getValue().getMacthing().get(0).getInputServiceName() +
+//                    " to " + res.getValue().getMacthing().get(0).getOutputServiceName());
             String fileName = outputDirectory + "/" +
                     res.getValue().getMacthing().get(0).getInputServiceName() +
                     ":" +
@@ -251,6 +251,9 @@ public class WSDLProcessor extends DocumentProcessor {
                         break;
                     case SystemOut:
                         m.marshal(res, System.out);
+                        break;
+                    case None:
+                        // Do nothing
                         break;
                 }
             } catch (JAXBException jaxbe) {

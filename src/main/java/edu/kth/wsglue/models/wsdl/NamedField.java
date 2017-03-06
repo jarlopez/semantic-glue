@@ -21,4 +21,11 @@ public class NamedField implements MessageField {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "NamedField{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }
