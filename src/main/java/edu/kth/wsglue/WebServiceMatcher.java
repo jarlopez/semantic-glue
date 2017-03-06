@@ -21,6 +21,8 @@ public class WebServiceMatcher {
     private static final String SAWSDL_PATH = "/SAWSDL";
 
     private static final Double MIN_SERVICE_SCORE = 0.5;
+    private static final UnloadMode DEFAULT_UNLOAD_MODE = UnloadMode.SystemOut;
+    private static final ExecutionMode DEFAULT_EXECUTION_MODE = ExecutionMode.Hybrid;
 
     private enum ExecutionMode {
         WSDL,
@@ -32,8 +34,8 @@ public class WebServiceMatcher {
         String cwd = System.getProperty("user.dir");
         String out = cwd + OUTPUT_PATH;
 
-        ExecutionMode executionMode = ExecutionMode.Hybrid;
-        UnloadMode unloadMode = UnloadMode.None;
+        ExecutionMode executionMode = DEFAULT_EXECUTION_MODE;
+        UnloadMode unloadMode = DEFAULT_UNLOAD_MODE;
         if (args.length > 0) {
             String mode = args[0].toLowerCase();
             switch (mode) {

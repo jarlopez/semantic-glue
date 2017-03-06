@@ -1,0 +1,5 @@
+- Filtering by minimum service score of 0.5 reduces # service matches from 2500+ to 610
+- Caching everywhere helps
+    - Node lookup in processor helper
+    - ESPECIALLY in SemanticComparator & caching class relationship lookups
+
