@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Comparator for semantically-related WSDL input/output fields
@@ -28,6 +30,17 @@ public class SemanticComparator extends WsComparator<SemanticField> {
     private static final Double SEMANTIC_THRESHOLD = 0.5;
     private static final String ONTOLOGY_FILE_NAME = "/SUMO.owl";
 
+    /*
+    Known trouble classes:
+        activity
+        thing
+        moveablething
+        destination
+        farmland
+        videomedia
+        banker
+    */
+    private Set<String> badClasses = new HashSet<>();
 
     public SemanticComparator() {
         super();
@@ -56,10 +69,28 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         String s1 = ((SemanticField) mf1).getSemanticReference().toLowerCase();
         String s2 = ((SemanticField) mf2).getSemanticReference().toLowerCase();
 
+
+
         OWLClass c1 = ontologyMap.get(s1);
         OWLClass c2 = ontologyMap.get(s2);
 
+
+        if (c1 == null) {
+            s1 = s1.replaceAll("-", "");
+            c1 = ontologyMap.get(s1);
+        }
+        if (c2 == null) {
+            s2 = s2.replaceAll("-", "");
+            c2 = ontologyMap.get(s2);
+        }
         if (c1 == null || c2 == null) {
+            if (c1 == null) badClasses.add(s1);
+            if (c2 == null) badClasses.add(s2);
+            return res.getScore();
+        }
+
+        if (badClasses.contains(s1) || badClasses.contains(s2)) {
+            log.warn("Spotted unmatched class, returning early");
             return res.getScore();
         }
 
@@ -73,6 +104,7 @@ public class SemanticComparator extends WsComparator<SemanticField> {
         } else if (manager.findRelationship(c1, c2, reasoner).size() != 0) {
             res = SemanticMatchingDegree.Structural;
         }
+
         return res.getScore();
     }
 
